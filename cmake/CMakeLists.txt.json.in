@@ -1,0 +1,17 @@
+cmake_minimum_required(VERSION 3.0)
+
+project(json-download NONE)
+
+
+include(ExternalProject)
+
+ExternalProject_Add(json 
+    GIT_REPOSITORY          https://github.com/nlohmann/json.git
+    GIT_TAG                 master
+    SOURCE_DIR              "${CMAKE_CURRENT_BINARY_DIR}/json-src" 
+    CONFIGURE_COMMAND       ""
+    BUILD_COMMAND           ""
+    INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_BINARY_DIR}/json-src/single_include" "${CMAKE_CURRENT_BINARY_DIR}/include/third-party" 
+    LOG_DOWNLOAD            ON 
+    LOG_INSTALL             ON 
+)
