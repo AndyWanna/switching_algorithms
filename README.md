@@ -1,2 +1,2 @@
-# ssched_simulator
-(input-queued) switch scheduling simulator
+# `ssched_simulator`: (Input-Queued) Switch Scheduling Simulator
+
