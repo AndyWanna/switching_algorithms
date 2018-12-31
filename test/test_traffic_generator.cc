@@ -19,7 +19,7 @@ using json = nlohmann::json;
 
 
 // Test Injection Model
-TEST_CASE("1. Constructor/Create should work correctly", "[injection]") {
+TEST_CASE("1. Injection model Constructor/Create should work correctly", "[injection]") {
     json inj_conf = {
         {"name", "bernoulli"},
         {"num_nodes", 10},

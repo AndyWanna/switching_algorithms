@@ -29,8 +29,18 @@ add_executable(packet_example
 list(APPEND saber_examples
         packet_example)
 
+## timer/channel/stats
+add_executable(util_example
+        "util_example.cc")
+target_link_libraries(util_example
+        ${saber_libraries})
+list(APPEND saber_examples
+        util_example)
+
 add_custom_target(
         example
         COMMAND $<TARGET_FILE:traffic_generator_example>
+        COMMAND $<TARGET_FILE:packet_example>
+        COMMAND $<TARGET_FILE:util_example>
         DEPENDS ${saber_examples}
 )

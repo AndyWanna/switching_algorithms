@@ -11,9 +11,14 @@ option(WITH_TESTS "Build with tests enabled" ON)
 option(BUILD_SEPARATE_MODELS "Build each module as a separate library" OFF)
 option(BUILD_SHARED_LIBS "Build as shared libraries" OFF)
 option(USE_PREDOWNDLOAD_DEPS "Build with pre-downloaded dependencies" OFF)
+option(ENABLE_HDRHISTOGRAM "Build with HdrHistogram library enabled" ON)
 
 
+# libraries
+set(saber_libraries "")
 
+
+# Whether or not to use pre-downloaded packages
 if(USE_PREDOWNLOAD_DEPS)
     message("You choose to use pre-downaloaded dependencies")
     include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include/third-party")
@@ -48,11 +53,35 @@ else()
     add_subdirectory("${CMAKE_CURRENT_BINARY_DIR}/catch2-download"
         EXECLUDE_FROM_ALL)
     include_directories("${CMAKE_CURRENT_BINARY_DIR}/include/third-party")
+
+    ## Download & Compile Hdr_Histogram_C
+    if(ENABLE_HDRHISTOGRAM)
+        configure_file("cmake/CMakeLists.txt.hdrhistogram_c.in" ${CMAKE_BINARY_DIR}/HdrHistogram_c-download/CMakeLists.txt)
+        execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
+                RESULT_VARIABLE result
+                WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/HdrHistogram_c-download)
+        if (result)
+            message(FATAL_ERROR "CMake step for HdrHistogram_cHdrHistogram_c failed: ${result}")
+        endif ()
+        execute_process(COMMAND ${CMAKE_COMMAND} --build .
+                RESULT_VARIABLE result
+                WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/HdrHistogram_c-download)
+        if (result)
+            message(FATAL_ERROR "Build step for HdrHistogram_c failed: ${result}")
+        endif ()
+
+        add_subdirectory(${CMAKE_BINARY_DIR}/HdrHistogram_c-src
+                ${CMAKE_BINARY_DIR}/HdrHistogram_c-build
+                EXCLUDE_FROM_ALL)
+
+        list(APPEND saber_libraries hdr_histogram_static)
+    endif()
 endif()
 
+if(ENABLE_HDRHISTOGRAM)
+    add_definitions(-DENABLE_HDRHISTOGRAM)
+endif()
 
-# libraries
-set(saber_libraries "")
 
 # includes
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/src")

@@ -14,7 +14,8 @@ add_dependencies(cfg_outputstream_example
 # Test cases for this project
 set( TEST_SOURCES 
      test_main.cc
-     test_traffic_generator.cc)
+     test_traffic_generator.cc
+        test_util.cc)
 
 add_executable(sschedsim_test
     ${TEST_SOURCES})
@@ -23,5 +24,6 @@ add_dependencies(sschedsim_test
     catch2 )
 target_link_libraries(sschedsim_test
         injection_model
-        traffic_pattern )
+        traffic_pattern
+        ${saber_libraries})
 add_test(NAME sschedsim_test COMMAND sschedsim_test)
