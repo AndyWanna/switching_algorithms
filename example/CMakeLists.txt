@@ -7,6 +7,8 @@ project(SSchedSimulatorExample)
 
 # Examples for this project
 set(saber_examples "")
+
+## traffic generator
 add_executable(traffic_generator_example
         "traffic_generator_example.cc")
 add_dependencies(traffic_generator_example
@@ -21,6 +23,11 @@ list(APPEND saber_examples
         traffic_generator_example )
 
 
+## packet
+add_executable(packet_example
+        "packet_example.cc")
+list(APPEND saber_examples
+        packet_example)
 
 add_custom_target(
         example

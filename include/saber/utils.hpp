@@ -27,8 +27,8 @@ inline std::ostream &operator<<(std::ostream &os, const std::queue<T *> &q) {
   auto q_bk = q;
   int cnt = 1;
   while (!q_bk.empty()) {
-    os << "Item " << std::to_string(cnt) << " : {\n";
-    os << *q_bk.front() << "}\n";
+    os << "Item " << std::to_string(cnt) << " : \n{\n";
+    os << *q_bk.front() << "\n}\n";
     q_bk.pop();
     ++cnt;
   }
