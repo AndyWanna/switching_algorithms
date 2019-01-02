@@ -11,7 +11,7 @@ RandomizedEdgeColoringCAggarwal::RandomizedEdgeColoringCAggarwal(std::string nam
                                                                  int num_outputs,
                                                                  int frame_size,
                                                                  std::mt19937::result_type seed) :
-    BatchScheduler(name, num_inputs, num_outputs, frame_size),
+    BatchScheduler(name, num_inputs, num_outputs, frame_size, true),
     _multigraph_adj(num_inputs),
     _seed(seed), _eng(seed) {
 

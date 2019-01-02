@@ -94,6 +94,9 @@ void sIQSwitch::display(std::ostream &os) const {
     std::cout << row_queue_len;
     std::cout << "\n";
   }
+  os << "------------------------------------------------------------\n";
+  os << "Scheduler : \n";
+  _schedule->display(os);
 }
 void sIQSwitch::reset() {
   IQSwitch::reset();
@@ -211,15 +214,7 @@ void gIQSwitch::display(std::ostream &os) const {
   os << "Scheduler : \n";
   _schedule->display(os);
   _timer->display(os);
-  os << "\n\n";
 }
-//gIQSwitch::~gIQSwitch() {
-//  IQSwitch::~IQSwitch();
-//  if (_schedule)
-//    delete (_schedule);
-//  if (_timer)
-//    delete (_timer);
-//}
 void gIQSwitch::reset() {
   if (_schedule == nullptr) throw MissingComponentException("Scheduler is missing.");
   if (_timer == nullptr) throw MissingComponentException("Timer is missing.");

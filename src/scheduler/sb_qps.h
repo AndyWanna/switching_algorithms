@@ -20,8 +20,6 @@ class SB_QPS : public BatchScheduler {
   std::mt19937 _eng{std::random_device{}()};
   // whether or not to allow retry previous time slots within the same frame
   bool _allow_retry_previous{false};
-  // whether or not to allow adaptive frame size
-  bool _allow_adaptive_frame{false};
   // accept policy
   std::string _accept_policy{"longest_first"};
 
@@ -39,10 +37,8 @@ class SB_QPS : public BatchScheduler {
   // next try color for each edge
   std::vector<std::vector<frame_id> > _next_try_color;
 
-  SB_QPS(std::string name, int num_inputs, int num_outputs, int frame_size,
-           std::mt19937::result_type seed, bool allow_retry_previous,
-           bool allow_adaptive_frame,
-           std::string accept_policy) ;
+  SB_QPS(std::string name, int num_inputs, int num_outputs, int frame_size, bool frame_size_fixed,
+           std::mt19937::result_type seed, bool allow_retry_previous, std::string accept_policy) ;
   void handle_arrivals(const IQSwitch *sw);
   void qps(const IQSwitch *sw, size_t current_ts);
   void qps_adaptive_frame(const IQSwitch *sw, size_t current_ts);

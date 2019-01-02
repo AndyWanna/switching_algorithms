@@ -9,14 +9,13 @@ SB_QPS::SB_QPS(std::string name,
                int num_inputs,
                int num_outputs,
                int frame_size,
+               bool frame_size_fixed,
                std::mt19937::result_type seed,
                bool allow_retry_previous,
-               bool allow_adaptive_frame,
                std::string accept_policy) :
-    BatchScheduler(name, num_inputs, num_outputs, frame_size),
+    BatchScheduler(name, num_inputs, num_outputs, frame_size, frame_size_fixed),
     _seed(seed), _eng(seed),
     _allow_retry_previous(allow_retry_previous),
-    _allow_adaptive_frame(allow_adaptive_frame),
     _accept_policy(std::move(accept_policy)),
     _bst(num_inputs),
     _match_flag_in(num_inputs),
@@ -361,7 +360,7 @@ void SB_QPS::schedule(const saber::IQSwitch *sw) {
   qps(sw, _cf_rel_time);
   ++ _cf_rel_time;
   if ( _cf_rel_time == _frame_size ) {
-    if ( _allow_adaptive_frame ) post_optimization_adaptive_frame();
+    if ( !frame_size_fixed() ) post_optimization_adaptive_frame();
     else post_optimization();
 
     _cf_rel_time = 0;

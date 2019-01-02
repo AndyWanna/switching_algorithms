@@ -20,6 +20,7 @@ class RandomizedEdgeColoringCAggarwal : public BatchScheduler {
   std::vector<std::vector<int> > _multigraph_adj;
   std::mt19937::result_type _seed;
   std::mt19937 _eng{std::random_device{}()};
+
   RandomizedEdgeColoringCAggarwal(std::string name, int num_inputs, int num_outputs, int frame_size,
                                   std::mt19937::result_type seed);
   void handle_arrivals(const IQSwitch *sw);

@@ -46,6 +46,15 @@ target_link_libraries(sched_example
 list(APPEND saber_example
         sched_example)
 
+## switch
+add_executable(switch_example
+        "switch_example.cc")
+target_link_libraries(switch_example
+        scheduler
+        switch)
+list(APPEND saber_example
+        switch_example)
+
 # Add to customized target example
 add_custom_target(
         example
@@ -53,5 +62,6 @@ add_custom_target(
         COMMAND $<TARGET_FILE:packet_example>
         COMMAND $<TARGET_FILE:util_example>
         COMMAND $<TARGET_FILE:sched_example>
+        COMMAND $<TARGET_FILE:switch_example>
         DEPENDS ${saber_examples}
 )

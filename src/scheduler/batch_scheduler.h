@@ -23,6 +23,7 @@ class BatchScheduler : public Scheduler {
   friend class SchedulerFactory;
  protected:
   const size_t _frame_size_init; // initial value for frame size
+  const bool _frame_size_fixed; // whether or not to allow frame size change after initialization
   size_t _frame_size; // current frame size
   size_t _cf_rel_time; // current frame relative time
   std::vector<std::vector<int> > _schedules; // schedules for current frame
@@ -30,11 +31,13 @@ class BatchScheduler : public Scheduler {
   int _pf_rel_time; // previous frame relative time
 
   // hidden constructor
-  BatchScheduler(const std::string &name, int num_inputs, int num_outputs, int frame_size) ;
+  BatchScheduler(const std::string &name, int num_inputs, int num_outputs, int frame_size, bool frame_size_fixed) ;
  public:
   ~BatchScheduler() override = default;
   void schedule(const IQSwitch *sw) override = 0;
   void init(const IQSwitch *sw) override = 0;
+  size_t frame_size() const { return _frame_size; }
+  bool frame_size_fixed() const { return _frame_size_fixed; }
   void reset() override ;
 
   void display(std::ostream &os)  const override ;
