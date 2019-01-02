@@ -25,7 +25,7 @@ void BatchScheduler::reset() {
 void BatchScheduler::display(std::ostream &os) const {
   Scheduler::display(os);
   os << "---------------------------------------------------------------------------------\n";
-  os << "\nframe_size : " << _frame_size;
+  os << "frame_size : " << _frame_size;
   os << "\nschedules (previous frame): \n";
   int cnt = 1;
   for ( const auto& m : _schedules_pre ) os << "Time Slot " << (cnt ++) << " : " << m << "\n";

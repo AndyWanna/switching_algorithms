@@ -71,6 +71,11 @@ Scheduler *SchedulerFactory::Create(const json &conf) {
         name + "|" + accept_policy + "|" + std::to_string(iterations) + "|" + std::to_string(without_replacement),
         num_inputs, num_outputs, seed, iterations, accept_policy, without_replacement);
 
+  } else if (name == "randomized_edge_coloring") {
+    int frame_size = (conf.count("frame_size")?conf["frame_size"].get<int>():(10 * num_inputs * num_outputs));
+    unsigned seed = (conf.count("seed") ? conf["seed"].get<unsigned>()
+                                        : static_cast<unsigned >(sys_clock_t::now().time_since_epoch().count()));
+    sched = new RandomizedEdgeColoringCAggarwal(name, num_inputs, num_outputs, frame_size, seed);
   } else if (name == "sb_qps") {
     int frame_size = (conf.count("frame_size")?conf["frame_size"].get<int>():20);
     unsigned seed = (conf.count("seed") ? conf["seed"].get<unsigned>()
