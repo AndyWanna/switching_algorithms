@@ -76,6 +76,26 @@ else()
 
         list(APPEND saber_libraries hdr_histogram_static)
     endif()
+
+    ## Download & Compiler LEMON C++
+    configure_file("cmake/CMakeLists.txt.lemon.in" ${CMAKE_BINARY_DIR}/lemon-download/CMakeLists.txt)
+    execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
+            RESULT_VARIABLE result
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/lemon-download)
+    if (result)
+        message(FATAL_ERROR "CMake step for lemon failed: ${result}")
+    endif ()
+    execute_process(COMMAND ${CMAKE_COMMAND} --build .
+            RESULT_VARIABLE result
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/lemon-download)
+    if (result)
+        message(FATAL_ERROR "Build step for lemon failed: ${result}")
+    endif ()
+
+    add_subdirectory(${CMAKE_BINARY_DIR}/lemon-src
+            ${CMAKE_BINARY_DIR}/lemon-download
+            EXCLUDE_FROM_ALL)
+    list(APPEND saber_libraries emon)
 endif()
 
 if(ENABLE_HDRHISTOGRAM)

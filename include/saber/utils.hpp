@@ -14,6 +14,12 @@
 
 // Overloaded functions to make printing std::vector easier
 // ////////////////////////////////////////////////////////
+// overload operator<< for std::pair
+template<typename T, typename S>
+inline std::ostream& operator<<(std::ostream&os, const std::pair<T, S> &p) {
+  os << "(" << p.first << ", " << p.second << ")";
+  return os;
+}
 // overload operator<< for std::vector
 template<typename T>
 inline std::ostream &operator<<(std::ostream &os, const std::vector<T> &v) {

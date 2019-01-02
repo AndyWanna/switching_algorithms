@@ -1,4 +1,4 @@
-// test_stats.cc
+// test_util.cc
 
 // main() provided by Catch in the file test_main.cc
 //
