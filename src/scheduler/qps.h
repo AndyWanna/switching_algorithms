@@ -39,6 +39,7 @@ class QPS : public RandomizedScheduler {
   ~QPS() override = default;
   void reset() override ;
   void schedule(const IQSwitch *sw) override;
+  void init(const IQSwitch *sw) override;
   void display(std::ostream &os) const override ;
 };
 } // namespace saber

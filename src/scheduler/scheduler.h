@@ -67,6 +67,7 @@ class Scheduler {
 
   // virtual APIs
   virtual void schedule(const IQSwitch *sw) = 0;
+  virtual void init(const IQSwitch *sw) = 0;
   virtual void reset() = 0;
   virtual void display(std::ostream &os) const;
   int match_with(int source, const PortType &pt = PortType::IN) const ;
@@ -89,6 +90,7 @@ class DummyScheduler : public Scheduler {
   Scheduler(std::move(name), num_inputs, num_outputs, out_match_enabled){}
  public:
   void schedule(const IQSwitch *sw) override { /* do nothing */ }
+  void init(const IQSwitch *sw) override { /* do nothing */ }
   void reset() override { /* do nothing */ }
   ~DummyScheduler() override = default;
 };
@@ -104,8 +106,9 @@ class RandomizedScheduler : public Scheduler {
                       bool out_match_enabled, std::mt19937::result_type seed);
  public:
   ~RandomizedScheduler() override = default;
-  virtual void schedule(const IQSwitch *sw) override = 0;
-  virtual void reset() override {}
+  void schedule(const IQSwitch *sw) override = 0;
+  void init(const IQSwitch *sw) override = 0;
+  void reset() override {}
   void display(std::ostream &os) const override ;
 };// class RandomizedScheduler
 } // namespace saber

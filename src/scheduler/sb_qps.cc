@@ -366,7 +366,7 @@ void SB_QPS::schedule(const saber::IQSwitch *sw) {
 
     _cf_rel_time = 0;
     _frame_size = _schedules.size();
-    assert( _pf_rel_time == _schedules_pre.size() );
+    assert(_pf_rel_time == _schedules_pre.size());
     _schedules_pre.resize(_frame_size);
 
     for ( size_t k = 0;k < _frame_size;++ k){
@@ -376,6 +376,9 @@ void SB_QPS::schedule(const saber::IQSwitch *sw) {
     _pf_rel_time = 0;
     bitmap_reset();
   }
+}
+void SB_QPS::init(const IQSwitch *sw) {
+  // TODO
 }
 
 } // namespace saber

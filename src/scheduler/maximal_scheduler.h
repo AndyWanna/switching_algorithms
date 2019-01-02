@@ -44,6 +44,7 @@ class RandomizedMaximalScheduler : public RandomizedScheduler {
  public:
   ~RandomizedMaximalScheduler() override = default;
   void schedule(const IQSwitch *sw) override;
+  void init(const IQSwitch *sw) override;
   void reset() override ;
 }; // RandomizedMaximalScheduler
 
@@ -73,6 +74,7 @@ class iSLIP : public Scheduler {
   void reset() override ;
   void display(std::ostream &os) const override;
   void schedule(const IQSwitch *sw) override;
+  void init(const IQSwitch *sw) override;
 };
 } // namespace saber
 

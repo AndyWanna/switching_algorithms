@@ -114,7 +114,11 @@ void RandomizedMaximalScheduler::schedule(const saber::IQSwitch *sw) {
   // departure handling
   handle_departures(sw);
 }
-
+void RandomizedMaximalScheduler::init(const IQSwitch *sw) {
+  for(int src = 0;src < _num_inputs;++ src)
+    for(int dst = 0; dst < _num_outputs;++ dst)
+      if(sw->get_queue_length(src, dst) > 0) insert(src, dst);
+}
 
 // Implementation of class iSLIP
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -221,7 +225,11 @@ void iSLIP::schedule(const saber::IQSwitch *sw) {
 
   handle_departures(sw);
 }
-
+void iSLIP::init(const IQSwitch *sw) {
+  for (int s = 0; s < _num_inputs; ++s)
+    for(int d = 0;d < _num_outputs;++ d)
+      _queue_status[s][d] = sw->get_queue_length(s, d) != 0;
+}
 
 }// namespace saber
 

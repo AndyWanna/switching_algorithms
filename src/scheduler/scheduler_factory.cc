@@ -1,15 +1,17 @@
 //
 #include "scheduler_factory.h"
+#include <exceptions.hpp>
 
 namespace saber {
 // Implementation of Create for class SchedulerFactory
 //  //////////////////////////////////////////////////////////
 Scheduler *SchedulerFactory::Create(const json &conf) {
-  assert(conf.count("name") && "Argument conf MUST contain name");
-  assert(conf.count("num_inputs") && "Argument conf MUST contain num_inputs");
-  assert(conf.count("num_outputs") && "Argument conf MUST contain num_inputs");
-
+  if(!(conf.count("name"))) throw MissingArgumentException("Argument conf MUST contain name!");
+  if(!(conf.count("num_inputs"))) throw MissingArgumentException("Argument conf MUST contain num_inputs!");
+  if(!(conf.count("num_outputs"))) throw MissingArgumentException("Argument conf MUST contain num_inputs!");
   std::string name = conf["name"].get<std::string>();
+  if(name.empty()) throw EmptyNameException("Argument conf MUST contain a key \"name\", whose value is NOT EMPTY!");
+
   int num_inputs = conf["num_inputs"].get<int>();
   int num_outputs = conf["num_outputs"].get<int>();
   bool out_match_enabled = (conf.count("out_match_enabled") ? conf["out_match_enabled"].get<bool>() : false);
@@ -47,7 +49,8 @@ Scheduler *SchedulerFactory::Create(const json &conf) {
   } else if (name == "slqf"){
     sched = new sLQF(name, num_inputs, num_outputs);
   } else if ( name == "ipoc" ) {
-    sched = new iPOC(name, num_inputs, num_outputs,1);
+    int iteration = (conf.count("iterations")?conf["iterations"].get<int>():1);
+    sched = new iPOC(name, num_inputs, num_outputs, iteration);
   }
   else if (name == "ilqf") {
     // TODO
@@ -69,13 +72,13 @@ Scheduler *SchedulerFactory::Create(const json &conf) {
         num_inputs, num_outputs, seed, iterations, accept_policy, without_replacement);
 
   } else if (name == "sb_qps") {
-    assert( conf.count("frame_size") );
+    int frame_size = (conf.count("frame_size")?conf["frame_size"].get<int>():20);
     unsigned seed = (conf.count("seed") ? conf["seed"].get<unsigned>()
                                         : static_cast<unsigned >(sys_clock_t::now().time_since_epoch().count()));
     std::string accept_policy{"longest_first"};
     if (conf.count("seed")) seed = conf["seed"].get<unsigned>();
     if (conf.count("accept_policy")) accept_policy = conf["accept_policy"].get<std::string>();
-    int frame_size = conf["frame_size"].get<int>();
+
     bool allow_adaptive_frame = false;
     bool allow_retry_previous = false;
     if ( conf.count("allow_retry_previous")) allow_retry_previous = conf["allow_retry_previous"].get<bool>();
@@ -86,12 +89,12 @@ Scheduler *SchedulerFactory::Create(const json &conf) {
                          num_inputs, num_outputs, frame_size, seed,
                          allow_retry_previous, allow_adaptive_frame, accept_policy);
 
-    sched->display(std::cout);
+    //sched->display(std::cout);
 
   } else {
-    std::cerr << "WARNING: unknown core name " << name << "!\n";
+    throw UnknownParameterException("Unknown scheduler name: " + name + "!");
   }
 
   return sched;
 }
-}
+} // namespace saber

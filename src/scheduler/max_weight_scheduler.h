@@ -54,6 +54,8 @@ class MaxWeightScheduler : public Scheduler {
   ~MaxWeightScheduler() override = default;
   // Do the schedule (handle arrivals => calculate new schedule => handle departure)
   void schedule(const IQSwitch *sw) override;
+  //
+  void init(const IQSwitch *sw) override;
   // Reset the states of the scheduler
   void reset() override ;
 };

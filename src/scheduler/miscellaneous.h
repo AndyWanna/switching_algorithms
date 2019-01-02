@@ -25,6 +25,7 @@ class RoundRobin : public Scheduler {
  public:
   void reset() override { std::copy(_initial_match.begin(), _initial_match.end(), _in_match.begin());}
   void schedule(const IQSwitch *sw) override ;
+  void init(const IQSwitch *sw) override { /* do nothing */ }
   void display(std::ostream &os) const override ;
 }; // class RoundRobin
 
@@ -42,6 +43,7 @@ class sLQF : public RandomizedScheduler {
   void reset() override {
   }
   void schedule(const IQSwitch *sw) override ;
+  void init(const IQSwitch *sw) override ;
   void display(std::ostream &os) const override { RandomizedScheduler::display(os); }
 }; // class sLQF
 
@@ -62,6 +64,7 @@ class iPOC : public RandomizedScheduler {
  public:
   void reset() override { for(auto& _voq: _non_empty_voqs) _voq.clear(); };
   void schedule(const IQSwitch *sw) override ;
+  void init(const IQSwitch *sw) override ;
   void display(std::ostream &os) const override ;
 };
 } // namespace saber

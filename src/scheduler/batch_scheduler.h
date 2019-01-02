@@ -33,13 +33,14 @@ class BatchScheduler : public Scheduler {
   BatchScheduler(const std::string &name, int num_inputs, int num_outputs, int frame_size) ;
  public:
   ~BatchScheduler() override = default;
-  virtual void schedule(const IQSwitch *sw) override = 0;
-  virtual void reset() override ;
+  void schedule(const IQSwitch *sw) override = 0;
+  void init(const IQSwitch *sw) override = 0;
+  void reset() override ;
 
-  virtual void display(std::ostream &os)  const override ;
+  void display(std::ostream &os)  const override ;
 
   //! reserved for future extensions
-  virtual void dump_stats(std::ostream &os) override {}
+  void dump_stats(std::ostream &os) override {}
 };
 
 } // namespace saber

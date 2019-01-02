@@ -56,6 +56,7 @@ class SB_QPS : public BatchScheduler {
  public:
   ~SB_QPS() override = default;
   void schedule(const IQSwitch *sw) override;
+  void init(const IQSwitch *sw) override;
   void reset() override ;
   void display(std::ostream &os) const override ;
   //// reserved

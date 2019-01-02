@@ -26,7 +26,8 @@ using sys_clock_t=std::chrono::system_clock;
 class SchedulerFactory {
  public:
   static Scheduler *Create(const json &conf) ;
-}; // class SchedulerFactory
+};
+// class SchedulerFactory
 
 }
 

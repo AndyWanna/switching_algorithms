@@ -26,6 +26,7 @@ class RandomizedEdgeColoringCAggarwal : public BatchScheduler {
  public:
   ~RandomizedEdgeColoringCAggarwal() override = default;
   void schedule(const IQSwitch *sw) override;
+  void init(const IQSwitch *sw) override;
   void reset() override ;
   void display(std::ostream &os) const override ;
   //// reserved

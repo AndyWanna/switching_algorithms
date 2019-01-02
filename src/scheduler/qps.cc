@@ -179,4 +179,10 @@ void QPS::schedule(const saber::IQSwitch *sw) {
   //
   handle_departures(sw);
 }
+void QPS::init(const IQSwitch* sw) {
+  for (int s = 0;s < _num_inputs;++ s)
+    for(int d = 0;d < _num_outputs;++ d)
+      if (sw->get_queue_length(s, d) > 0) BST::update<int>(_bst[s], d + _left_start, sw->get_queue_length(s, d));
+
+}
 } // namespace saber

@@ -116,4 +116,7 @@ void RandomizedEdgeColoringCAggarwal::schedule(const IQSwitch *sw) {
   }
   _pf_rel_time = 0;
 }
+void RandomizedEdgeColoringCAggarwal::init(const IQSwitch *sw) {
+  // TODO
+}
 } // namespace saber

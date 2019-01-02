@@ -107,7 +107,6 @@ void MaxWeightScheduler::handle_arrivals(const IQSwitch *sw) {
 }
 
 void MaxWeightScheduler::handle_departures(const IQSwitch *sw) {
-  {
     assert(_graph_initialized && "Graph MUST be initialized");
     int d;
     Edge e;
@@ -123,9 +122,7 @@ void MaxWeightScheduler::handle_departures(const IQSwitch *sw) {
         --_weight[e];
       }
     }
-  }
 }
-
 void MaxWeightScheduler::schedule(const IQSwitch *sw) {
   assert(_graph_initialized && "Graph should be initialized!");
   MaxWeightedMatching mwm(_g, _weight);
@@ -135,6 +132,17 @@ void MaxWeightScheduler::schedule(const IQSwitch *sw) {
   handle_departures(sw);
   if (_out_match_enabled)
     update_out_match(mwm);
+}
+void MaxWeightScheduler::init(const IQSwitch *sw) {
+  Edge e;
+  int id;
+  for (int i = 0; i < _num_inputs; ++i) {
+    for (int j = 0; j < _num_outputs; ++j) {
+      id = _edges[i][j];
+      e = _g.edgeFromId(id);
+      _weight[e] = sw->get_queue_length(i, j);
+    }
+  }
 }
 } // namespace saber
 
