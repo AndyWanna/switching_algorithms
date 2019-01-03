@@ -85,5 +85,27 @@ struct UnknownParameterException : public std::exception {
     return _msg.c_str();
   }
 };// struct UnknownParameter
+// EmptyArgument exception
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////
+struct EmptyArgumentException : public std::exception {
+ private:
+  std::string _msg;
+ public:
+  explicit EmptyArgumentException(std::string msg) : _msg(std::string("EmptyArgumentError: ") + std::move(msg)) {}
+  const char *what() const noexcept override {
+    return _msg.c_str();
+  }
+};// struct EmptyArgumentException
+// NonEmptyInitialization exception
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////
+struct NonEmptyInitializationException : public std::exception {
+ private:
+  std::string _msg;
+ public:
+  explicit NonEmptyInitializationException(std::string msg) : _msg(std::string("NonEmptyInitializationError: ") + std::move(msg)) {}
+  const char *what() const noexcept override {
+    return _msg.c_str();
+  }
+};// struct NonEmptyInitializationException
 } // namespace saber
 #endif // EXCEPTIONS_HPP
