@@ -22,7 +22,7 @@ IQSwitchSimulator::IQSwitchSimulator(std::string name,
                                      int verbose,
                                      int num_inputs,
                                      int num_outputs,
-                                     const json &conf) : Simulator(name, verbose), _num_inputs(num_inputs),
+                                     const json &conf) : Simulator(std::move(name), verbose), _num_inputs(num_inputs),
                                                          _num_outputs(num_outputs),
                                                          _input_channels(num_inputs, nullptr),
                                                          _output_channels(num_outputs, nullptr) {
@@ -48,7 +48,6 @@ IQSwitchSimulator::IQSwitchSimulator(std::string name,
       _least_simulation_effort = static_cast<int>(n_sq * MAX_EFFORT_C);
     }
   }
-
   // initialize channels
   init_channels();
   // create a switch
@@ -57,7 +56,7 @@ IQSwitchSimulator::IQSwitchSimulator(std::string name,
   // create traffic related objects
   load_traffic_profile(conf);
   // initialize statistic objects
-  init_stats();
+  init_stats(conf);
   // mark as initialized
   _reset = true;
 }
@@ -90,13 +89,12 @@ void IQSwitchSimulator::load_traffic_profile(const json &conf) {
     injection_seed = conf["seeds"][injection_name].get<unsigned>();
   }
   if (injection_name.find("onoff") != std::string::npos) {
-    assert(conf.count("burst_size"));
+    if(!(conf.count("burst_size"))) throw MissingArgumentException("Argument conf MUST contain \"burst_size\" for on off injections!");
     _burst_sizes = conf["burst_size"].get<std::vector<double>>();
     create_onoff_injection(injection_seed);
   } else {
     create_bernoulli_injection(injection_seed);
   }
-
 }
 void IQSwitchSimulator::create_bernoulli_injection(unsigned seed) {
   json conf = {
@@ -143,23 +141,53 @@ void IQSwitchSimulator::configure_switch(const json &conf) {
     scheduler_conf[it.key()] = it.value();
   }
 #ifdef DEBUG
-  std::cerr << "Switch configuration : \n" << switch_conf << std::endl;
+    std::cerr << "Switch configuration : \n" << switch_conf << std::endl;
     std::cerr << "Scheduler configuration : \n" << scheduler_conf << std::endl;
 #endif
   _switch = IQSwitchFactory::Create(switch_conf, scheduler_conf);
 }
-void IQSwitchSimulator::init_stats() {
-  json conf = {
+void IQSwitchSimulator::init_stats(const json &in_conf) {
+  std::set<std::string> instruments ;
+  if (_verbose > 0 && (!in_conf.count("instruments"))) {
+    std::cout << "No \"instruments\" are provided, use the default one, i.e., the delay & throughput instruments!\n";
+    instruments.insert("delay");
+  }
+  if (in_conf["instruments"]) {
+    for (const auto & ins : in_conf["instruments"].get<std::vector<std::string>>()) instruments.insert(ins);
+  }
+  bool throughput = false;
+  json ins_conf = {
       {"name", "general"}
   };
-  _delay_stats = Stats::New(conf);
-  _delay_stats->add_simple_counter("total_arrivals");
-  _delay_stats->add_simple_counter("total_departures");
-
-  _queue_length_stats = Stats::New(conf);
+  for (const auto& ins : instruments) {
+    if (ins == "throughput") continue;
+    if(ins == "delay" || ins == "totalQueueLength") {
+      ins_conf["name"] = ins;
+      _instruments[ins] = Stats::New(ins_conf);
+      if(!throughput) {
+        _instruments[ins]->add_simple_counter("total_arrivals");
+        _instruments[ins]->add_simple_counter("total_departures");
+        _instruments["throughput"] = _instruments[ins];// share
+        throughput = true;
+      }
+    } else if (ins == "frameSize"){
+      ins_conf["name"] = ins;
+      _instruments[ins] = Stats::New(ins_conf);
+    } else {
+      throw UnknownParameterException("Instrument " + ins + " has not been supported yet!");
+    }
+  }
+//  json conf = {
+//      {"name", "general"}
+//  };
+//  _delay_stats = Stats::New(conf);
+//  _delay_stats->add_simple_counter("total_arrivals");
+//  _delay_stats->add_simple_counter("total_departures");
+//
+//  _queue_length_stats = Stats::New(conf);
 }
 void IQSwitchSimulator::init_channels() {
-  assert(!_channel_installed);
+  if(_channel_installed) throw ReInitializationException("It seems channels have already been installed. You CANNOT install them again, as channels CAN only be installed once!");
   json conf = {
       {"name", ""}
   };
@@ -174,7 +202,7 @@ void IQSwitchSimulator::init_channels() {
   _channel_installed = true;
 }
 void IQSwitchSimulator::clear_channels() {
-  assert(_channel_installed);
+  if(!_channel_installed) throw DeleteNonInitializedException("You are trying to delete a vector of non-initialized pointers!");
 
   for (int i = 0; i < _num_inputs; ++i) {
     while (!_input_channels[i]->empty()) {
@@ -228,18 +256,27 @@ int IQSwitchSimulator::arriving(InjectionModel *injection, TrafficPattern *traff
   }
   return num_arrivals;
 }
-int IQSwitchSimulator::departing() {
+int IQSwitchSimulator::departing(const IQSwitch *sw) {
   int num_departures = 0;
   int delay;
 
-  for (int d = 0; d < _num_outputs; ++d) {
-    assert (_output_channels[d]->size() <= 1);
-    if (!_output_channels[d]->empty()) {
-      Packet *pkt = _output_channels[d]->receive();
-      delay = pkt->get_departure_time() - pkt->get_arrival_time();
-      _delay_stats->add_sample(delay);
-      ++num_departures;
-      delete (pkt);// release memory of pkt
+  if (_switch_type == "generic") {
+    for (int d = 0; d < _num_outputs; ++d) {
+      assert (_output_channels[d]->size() <= 1);
+      if (!_output_channels[d]->empty()) {
+        Packet *pkt = _output_channels[d]->receive();
+        delay = pkt->get_departure_time() - pkt->get_arrival_time();
+        // _delay_stats->add_sample(delay);
+        if(_instruments.count("delay")) _instruments["delay"]->add_sample(delay);
+        ++num_departures;
+        delete (pkt);// release memory of pkt
+      }
+    }
+  } else if(_switch_type == "simplified") {
+    const auto& departs = sw->get_departures();
+    for(const auto& sdp : departs) {
+      if(sdp.first != -1) ++ num_departures;
+      else break;
     }
   }
 
@@ -307,41 +344,48 @@ bool IQSwitchSimulator::simulate_on(InjectionModel *injection, TrafficPattern *t
     if(!(_output_channels[d]->empty())) throw NonEmptyInitializationException("All output channels should be empty at the beginning.\n");
   }
 
+  bool has_total_queue_len_ins = (_instruments.count("totalQueueLength") > 0);
+  bool has_delay_ins = (_instruments.count("delay") > 0);
+  std::string stopping_ins = (has_delay_ins?"delay":"totalQueueLength");
+  auto &throughput_ins = _instruments["throughput"];
+
+  double NaN = std::numeric_limits<double>::quiet_NaN();
   while (!stop_now(n, stddev_est)) {
     // arrival
     num_arrivals = arriving(injection, traffic);
     num_stall_packets += num_arrivals;
 
-    _delay_stats->increment_simple_counter("total_arrivals", num_arrivals);
+    throughput_ins->increment_simple_counter("total_arrivals", num_arrivals);
     // switching
     _switch->switching();
     // departure
-    num_departures = departing();
+    num_departures = departing(_switch);
     num_stall_packets -= num_departures;
     // update statistics
-    _delay_stats->increment_simple_counter("total_departures", num_departures);
-    _queue_length_stats->add_sample(num_stall_packets);
-    if (n >= _least_simulation_effort) stddev_est = std::sqrt(_delay_stats->variance());
+    throughput_ins->increment_simple_counter("total_departures", num_departures);
+    if(has_total_queue_len_ins) _instruments["totalQueueLength"]->add_sample(num_stall_packets);
+    if (n >= _least_simulation_effort) stddev_est = std::sqrt(_instruments[stopping_ins]->variance());
     ++n;
-
     if (n % print_interval == 0 && _verbose >= 0) {
       if (!_burst_sizes.empty()) {
         StdOutUtil::print_fw<width, precision>(_current_load,
                                                traffic->name(),
                                                _current_burst_size,
-                                               (_delay_stats->get_counter("total_departures")
-                                                   / _delay_stats->get_counter("total_arrivals")),
-                                               _delay_stats->average(),
-                                               _delay_stats->variance(),
-                                               _queue_length_stats->average());
+                                               (throughput_ins->get_counter("total_departures")
+                                                   / throughput_ins->get_counter("total_arrivals")),
+                                               (has_delay_ins?_instruments["delay"]->average():NaN),
+                                               (has_delay_ins?_instruments["delay"]->variance():NaN),
+                                               (has_total_queue_len_ins?_instruments["totalQueueLength"]->average():NaN),
+                                               (has_total_queue_len_ins?_instruments["totalQueueLength"]->variance():NaN));
       } else {
         StdOutUtil::print_fw<width, precision>(_current_load,
                                                traffic->name(),
-                                               (_delay_stats->get_counter("total_departures")
-                                                   / _delay_stats->get_counter("total_arrivals")),
-                                               _delay_stats->average(),
-                                               _delay_stats->variance(),
-                                               _queue_length_stats->average());
+                                               (throughput_ins->get_counter("total_departures")
+                                                   / throughput_ins->get_counter("total_arrivals")),
+                                               (has_delay_ins?_instruments["delay"]->average():NaN),
+                                               (has_delay_ins?_instruments["delay"]->variance():NaN),
+                                               (has_total_queue_len_ins?_instruments["totalQueueLength"]->average():NaN),
+                                               (has_total_queue_len_ins?_instruments["totalQueueLength"]->variance():NaN));
       }
       std::cout << "\n";
     }
@@ -350,10 +394,11 @@ bool IQSwitchSimulator::simulate_on(InjectionModel *injection, TrafficPattern *t
   // record final results
   _stats_results[traffic->name()]["load"].push_back(_current_load);
   _stats_results[traffic->name()]["throughput"]
-      .push_back((_delay_stats->get_counter("total_departures") / _delay_stats->get_counter("total_arrivals")));
-  _stats_results[traffic->name()]["mean-delay"].push_back(_delay_stats->average());
-  _stats_results[traffic->name()]["delay-variance"].push_back(_delay_stats->variance());
-  _stats_results[traffic->name()]["mean-queue-length"].push_back(_queue_length_stats->average());
+      .push_back((throughput_ins->get_counter("total_departures") / throughput_ins->get_counter("total_arrivals")));
+  _stats_results[traffic->name()]["mean-delay"].push_back(has_delay_ins?_instruments["delay"]->average():NaN);
+  _stats_results[traffic->name()]["delay-variance"].push_back(has_delay_ins?_instruments["delay"]->variance():NaN);
+  _stats_results[traffic->name()]["total-queue-length-average"].push_back((has_total_queue_len_ins?_instruments["totalQueueLength"]->average():NaN));
+  _stats_results[traffic->name()]["total-queue-length-variance"].push_back((has_total_queue_len_ins?_instruments["totalQueueLength"]->variance():NaN));
   if (!_burst_sizes.empty())
     _stats_results[traffic->name()]["burst-size"].push_back(_current_burst_size);
   return (n < _most_simulation_effort); // consider as unstable when n is too large
@@ -387,10 +432,13 @@ IQSwitchSimulator::~IQSwitchSimulator() {
 
   // delete statistics
   // std::cerr << "destory stats ...\n";
-  if (_delay_stats)
-    delete (_delay_stats);
-  if (_queue_length_stats)
-    delete (_queue_length_stats);
+  for(auto& ins : _instruments) {
+    if(ins.first != "throughput") delete(ins.second);
+  }
+//  if (_delay_stats)
+//    delete (_delay_stats);
+//  if (_queue_length_stats)
+//    delete (_queue_length_stats);
 }
 void IQSwitchSimulator::simulate() {
   assert(_channel_installed && "Channels MUST be installed before simulate");
@@ -443,8 +491,8 @@ void IQSwitchSimulator::reset() {
     traf.second->reset();
   }
   // reset all instruments
-  _delay_stats->reset();
-  _queue_length_stats->reset();
+  for(auto &ins : _instruments)
+    if(ins.first != "throughput") ins.second->reset();
   _reset = true;
 }
 void IQSwitchSimulator::display_stats(std::ostream &os) const {

@@ -107,5 +107,16 @@ struct NonEmptyInitializationException : public std::exception {
     return _msg.c_str();
   }
 };// struct NonEmptyInitializationException
+// DeleteNonInitialized exception
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////
+struct DeleteNonInitializedException : public std::exception {
+ private:
+  std::string _msg;
+ public:
+  explicit DeleteNonInitializedException(std::string msg) : _msg(std::string("DeleteNonInitializedError: ") + std::move(msg)) {}
+  const char *what() const noexcept override {
+    return _msg.c_str();
+  }
+};// struct DeleteNonInitializedException
 } // namespace saber
 #endif // EXCEPTIONS_HPP

@@ -39,6 +39,12 @@ class Simulator {
   virtual void simulate() = 0;
   virtual void reset() {}
   virtual void display_stats(std::ostream &os) const = 0;
+  virtual void display(std::ostream& os) const {
+    os <<   "name           : " << _name
+       << "\nid             : " << _id
+       << "\nverbose level  : " << _verbose
+       << "\n";
+  }
 
   // basic functions
   int id() { return _id; }
@@ -62,7 +68,7 @@ class IQSwitchSimulator : public Simulator {
   void create_bernoulli_injection(unsigned seed) ;
   void create_onoff_injection(unsigned seed) ;
   void configure_switch(const json &conf) ;
-  void init_stats() ;
+  void init_stats(const json &in_conf) ;
   void init_channels() ;
   void clear_channels() ;
   /** @brief Stopping rule
@@ -80,53 +86,59 @@ class IQSwitchSimulator : public Simulator {
   bool rel_stopping_rule(size_t n, double stddev_est, double average) const ;
 
   int arriving(InjectionModel *injection, TrafficPattern *traffic) ;
-  int departing() ;
+  int departing(const IQSwitch *sw) ;
   bool simulate_on(InjectionModel *injection, TrafficPattern *traffic, bool first_call = false) ;
 
  public:
-  // Deconstructor
   ~IQSwitchSimulator() override ;
+
   void simulate() override ;
   void reset() override ;
-
   void display_stats(std::ostream &os) const override ;
 
- protected:
+  void display(std::ostream &os) const override {
+    Simulator::display(os);
+    os << "-----------------------------------------------------------------";
+    os << "\nleast simulation effort      : " << _least_simulation_effort
+       << "\nmost simulation effort       : " << _most_simulation_effort
+       << "\nerror bound (for stopping)   : " << _error_bound
+       << "\ntraffic patterns             : " << _traffic_pattern_names
+       << "\n";
+  }
 
+ protected:
   //
   const int _num_inputs{-1};
   const int _num_outputs{-1};
-  //
+  // Default values for simulation efforts
   const int MIN_EFFORT_C{100};
   const int MAX_EFFORT_C{5000};
-
   // stopping related parameter
   int _least_simulation_effort{-1};
   int _most_simulation_effort{-1};
   double _error_bound{0.01};
   double _student_t{2.326};// 98% two-sided student t for n = infinity
-
   // parameters
   std::vector<double> _loads{};
   std::vector<std::string> _traffic_pattern_names{};
   std::vector<double> _burst_sizes{};
-
   // status
   bool _channel_installed{false};
   bool _reset{false};
   double _current_load{-1};
   double _current_burst_size{-1};
-
   // components
   IQSwitch *_switch{nullptr};
+  std::string _switch_type{"generic"};
   std::vector<Channel<Packet> *> _input_channels;
   std::vector<Channel<Packet> *> _output_channels;
   std::map<std::pair<double, double>, InjectionModel *> _injections;
   std::map<std::string, TrafficPattern *> _traffic_patterns;
-
-  // Statis
-  Stats *_delay_stats;
-  Stats *_queue_length_stats;
+  // changed to _instruments @2019-01-02
+//  Stats *_delay_stats;
+//  Stats *_queue_length_stats;
+  //
+  std::map<std::string, Stats *> _instruments;
   // final results
   json _stats_results;
 };
