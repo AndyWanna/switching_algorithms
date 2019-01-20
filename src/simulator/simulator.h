@@ -135,8 +135,8 @@ class IQSwitchSimulator : public Simulator {
   std::map<std::pair<double, double>, InjectionModel *> _injections;
   std::map<std::string, TrafficPattern *> _traffic_patterns;
   // changed to _instruments @2019-01-02
-//  Stats *_delay_stats;
-//  Stats *_queue_length_stats;
+  //  Stats *_delay_stats;
+  //  Stats *_queue_length_stats;
   //
   std::map<std::string, Stats *> _instruments;
   // final results

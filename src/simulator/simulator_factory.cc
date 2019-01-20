@@ -12,11 +12,14 @@ Simulator *SimulatorFactory::Create(const json &conf) {
     verbose = conf["verbose"].get<int>();
 
   Simulator *sim = nullptr;
+  // Maybe it is better to use type instead of name
   if (name == "IQSwitchSimulator") {
-    assert(conf.count("num_inputs") && conf.count("num_outputs"));
+    if(!(conf.count("num_inputs") && conf.count("num_outputs"))) throw MissingArgumentException("num_inputs and num_outputs are required!");
     int num_inputs = conf["num_inputs"].get<int>();
     int num_outputs = conf["num_outputs"].get<int>();
     sim = new IQSwitchSimulator(name, verbose, num_inputs, num_outputs, conf);
+  } else {
+    throw UnknownParameterException("Unknown simulator type!");
   }
 
   return sim;

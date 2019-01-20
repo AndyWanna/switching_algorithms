@@ -152,7 +152,7 @@ void IQSwitchSimulator::init_stats(const json &in_conf) {
     std::cout << "No \"instruments\" are provided, use the default one, i.e., the delay & throughput instruments!\n";
     instruments.insert("delay");
   }
-  if (in_conf["instruments"]) {
+  if (in_conf.count("instruments")) {
     for (const auto & ins : in_conf["instruments"].get<std::vector<std::string>>()) instruments.insert(ins);
   }
   bool throughput = false;
@@ -282,6 +282,8 @@ int IQSwitchSimulator::departing(const IQSwitch *sw) {
 
   return num_departures;
 }
+
+// TODO: add frame measurements
 bool IQSwitchSimulator::simulate_on(InjectionModel *injection, TrafficPattern *traffic, bool first_call) {
   // assume that all component have been reset
   assert(_reset);
@@ -311,6 +313,7 @@ bool IQSwitchSimulator::simulate_on(InjectionModel *injection, TrafficPattern *t
     std::cout << std::endl;
   }
 
+  // initialize _stats_results
   if (first_call) {
     _stats_results["experiment_name"] = _switch->get_scheduler()->name() + "|" + injection->name();
     _stats_results[traffic->name()]["load"] = std::vector<double>();
@@ -320,6 +323,9 @@ bool IQSwitchSimulator::simulate_on(InjectionModel *injection, TrafficPattern *t
     _stats_results[traffic->name()]["mean-queue-length"] = std::vector<double>();
     if (!_burst_sizes.empty())
       _stats_results[traffic->name()]["burst-size"] = std::vector<double>();
+    _stats_results[traffic->name()]["total-queue-length-average"] = std::vector<double>();
+    _stats_results[traffic->name()]["total-queue-length-variance"] = std::vector<double>();
+    _stats_results[traffic->name()]["entered_steady_stage"] = std::vector<bool>();
   }
 
   size_t n = 0;
@@ -391,6 +397,8 @@ bool IQSwitchSimulator::simulate_on(InjectionModel *injection, TrafficPattern *t
     }
   }
 
+
+  bool entered_steady_stage = (n < _most_simulation_effort);
   // record final results
   _stats_results[traffic->name()]["load"].push_back(_current_load);
   _stats_results[traffic->name()]["throughput"]
@@ -401,8 +409,12 @@ bool IQSwitchSimulator::simulate_on(InjectionModel *injection, TrafficPattern *t
   _stats_results[traffic->name()]["total-queue-length-variance"].push_back((has_total_queue_len_ins?_instruments["totalQueueLength"]->variance():NaN));
   if (!_burst_sizes.empty())
     _stats_results[traffic->name()]["burst-size"].push_back(_current_burst_size);
-  return (n < _most_simulation_effort); // consider as unstable when n is too large
+  // added @01/20/2019
+  _stats_results[traffic->name()]["entered_steady_stage"].push_back(entered_steady_stage);
+
+  return (entered_steady_stage); // consider as unstable (not able to enter the steady stage) when n is too large
 }
+
 // //////////////////////////////////////////////////
 // ///      PUBLIC APIs     ////////////////////////
 IQSwitchSimulator::~IQSwitchSimulator() {
@@ -456,12 +468,12 @@ void IQSwitchSimulator::simulate() {
         // TODO: unstable handling
       }
       // call reset
-      // std::cerr << "reseting ...\n";
       IQSwitchSimulator::reset();
       first_call = false;
     }
   }
 }
+
 void IQSwitchSimulator::reset() {
   if (_reset)
     return;

@@ -3,6 +3,7 @@
 #ifndef SIMULATOR_FACTORY_H
 #define SIMULATOR_FACTORY_H
 
+#include <exceptions.hpp>
 #include "simulator.h"
 
 namespace saber {
