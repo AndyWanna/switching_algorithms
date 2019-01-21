@@ -106,7 +106,7 @@ namespace saber {
 
         double average() {
             if (no_sample_yet()) {
-                std::cerr << "WARNING: no sample yet!\n";
+                // std::cerr << "WARNING: no sample yet!\n";
                 return std::numeric_limits<double>::quiet_NaN();
             }
             if (_average_cache.first != _num_samples) {
@@ -117,14 +117,14 @@ namespace saber {
 
         double min() const {
             if (no_sample_yet()) {
-                std::cerr << "WARNING: no sample yet!\n";
+               // std::cerr << "WARNING: no sample yet!\n";
             }
             return _min;
         }
 
         double max() const {
             if (no_sample_yet()) {
-                std::cerr << "WARNING: no sample yet!\n";
+               // std::cerr << "WARNING: no sample yet!\n";
             }
             return _max;
         }
@@ -161,7 +161,7 @@ namespace saber {
 
         double variance() {
             if (no_sample_yet()) {
-                std::cerr << "WARNING: no sample yet!\n";
+               // std::cerr << "WARNING: no sample yet!\n";
                 return std::numeric_limits<double>::quiet_NaN();
             }
             if (_variance_cache.first != _num_samples) {

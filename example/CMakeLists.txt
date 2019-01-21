@@ -42,7 +42,8 @@ add_executable(sched_example
         "scheduler_example.cc")
 target_link_libraries(sched_example
         scheduler
-        switch)
+        switch
+        ${sbaer_libraries})
 list(APPEND saber_example
         sched_example)
 
@@ -51,7 +52,8 @@ add_executable(switch_example
         "switch_example.cc")
 target_link_libraries(switch_example
         scheduler
-        switch)
+        switch
+        ${sbaer_libraries})
 list(APPEND saber_example
         switch_example)
 
@@ -62,7 +64,8 @@ add_executable(sim_example
 target_link_libraries(sim_example
         scheduler
         switch
-        simulator)
+        simulator
+        ${sbaer_libraries})
 list(APPEND saber_example
         sim_example)
 

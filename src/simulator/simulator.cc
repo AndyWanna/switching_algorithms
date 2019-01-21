@@ -134,6 +134,8 @@ void IQSwitchSimulator::configure_switch(const json &conf) {
       {"num_inputs", _num_inputs},
       {"num_outputs", _num_outputs}
   };
+  // FIXED: forget to initialize the value of switch type
+  if(conf["switch"].count("type")) _switch_type = conf["switch"]["type"];
   for (json::const_iterator it = conf["switch"].cbegin(), e_it = conf["switch"].cend(); it != e_it; ++it) {
     switch_conf[it.key()] = it.value();
   }
@@ -153,7 +155,7 @@ void IQSwitchSimulator::init_stats(const json &in_conf) {
   std::set<std::string> instruments ;
   if (!in_conf.count("instruments")) {
     if(_verbose > 0) std::cout << "No \"instruments\" are provided, use the default one, i.e., the delay & throughput instruments!\n";
-    instruments.insert("delay");
+    if(in_conf.count("switch") && in_conf["switch"].count("type") && in_conf["switch"]["type"] != "simplified") instruments.insert("delay");
     instruments.insert("totalQueueLength");
   }
   else {
@@ -358,7 +360,6 @@ bool IQSwitchSimulator::simulate_on(InjectionModel *injection, TrafficPattern *t
   auto &throughput_ins = _instruments["throughput"];
 
 
-
   while (!stop_now(n, stddev_est, avg_est)) {
     // arrival
     num_arrivals = arriving(injection, traffic);
@@ -420,7 +421,7 @@ bool IQSwitchSimulator::simulate_on(InjectionModel *injection, TrafficPattern *t
   // added @01/20/2019
   _stats_results[traffic->name()]["entered_steady_stage"].push_back(entered_steady_stage);
 
-  return (entered_steady_stage); // consider as unstable (not able to enter the steady stage) when n is too large
+  return entered_steady_stage; // consider as unstable (not able to enter the steady stage) when n is too large
 }
 
 // //////////////////////////////////////////////////
@@ -492,9 +493,6 @@ void IQSwitchSimulator::simulate() {
 void IQSwitchSimulator::reset() {
   if (_reset)
     return;
-#ifdef _DEBUG_SIMULATOR_
-  std::cerr << "IQSwitchSimulator::reset() is calling ...\n";
-#endif
   // The following two steps might be unnecessary
   // since they might be done by the switch reset.
   for (auto &ic : _input_channels) {

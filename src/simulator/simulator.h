@@ -37,6 +37,7 @@ class Simulator {
   // virtual functions
   virtual ~Simulator() = default;;
   virtual void simulate() = 0;
+  virtual const json& get_stats() const = 0;
   virtual void reset() {}
   virtual void display_stats(std::ostream &os) const = 0;
   virtual void display(std::ostream& os) const {
@@ -95,6 +96,9 @@ class IQSwitchSimulator : public Simulator {
   void simulate() override ;
   void reset() override ;
   void display_stats(std::ostream &os) const override ;
+  const json& get_stats() const override {
+    return _stats_results;
+  }
 
   void display(std::ostream &os) const override {
     Simulator::display(os);

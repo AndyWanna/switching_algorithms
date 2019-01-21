@@ -112,3 +112,13 @@ add_subdirectory(src)
 add_subdirectory(test)
 add_subdirectory(example)
 
+
+# add executable
+add_executable(ssched_simulator
+        ssched_simulator.cc)
+target_link_libraries(ssched_simulator
+        scheduler
+        switch
+        simulator
+        ${sbaer_libraries})
+

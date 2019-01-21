@@ -103,6 +103,7 @@ class DummyIQSwitch : public IQSwitch {
   void reset() override {
     for(auto& row_queue_len : _queue_len_mat) std::fill(row_queue_len.begin(), row_queue_len.end(), 0);
   }
+
   void display(std::ostream &os) const override {
     IQSwitch::display(os);
     os << "------------------------------------------------------------------------------\n";
@@ -142,6 +143,7 @@ class sIQSwitch : public IQSwitch {
 
   void read_inputs() override ;
   void write_outputs() override ;
+  void clear();
  public:
   void display(std::ostream &os) const override ;
   ~sIQSwitch() override = default;

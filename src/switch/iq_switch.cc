@@ -44,7 +44,7 @@ void sIQSwitch::read_inputs(){
         _arrivals[num_arrivals].second = pkt->_destination;
       }
       ++ num_arrivals;
-
+      delete(pkt); // release memory
     }
   }
   if (num_arrivals < _arrivals.size()){
@@ -100,6 +100,37 @@ void sIQSwitch::display(std::ostream &os) const {
 }
 void sIQSwitch::reset() {
   IQSwitch::reset();
+  // BugFixed: reset queue length
+  for(auto& row_queue_len : _queue_len_mat) std::fill(row_queue_len.begin(), row_queue_len.end(), 0);
+  _schedule->reset();
+  clear();
+  for (auto &_arrival : _arrivals) {
+    _arrival.first = -1;
+    _arrival.second = -1;
+  }
+  for (auto &_dep : _departures ) {
+    _dep.first = -1;
+    _dep.second = -1;
+  }
+}
+// clear channel
+void sIQSwitch::clear() {
+  if (!_channel_installed) return;
+
+  for (int s = 0; s < _num_inputs; ++s) {
+    while (_input_channel[s] && !_input_channel[s]->empty()) {
+      Packet *pkt = _input_channel[s]->receive();
+      delete (pkt);
+    }
+  }
+
+  for (int d = 0; d < _num_outputs; ++d) {
+    while (_output_channel[d] && !_output_channel[d]->empty()) {
+      Packet *pkt = _output_channel[d]->receive();
+      delete (pkt);
+    }
+  }
+
 }
 size_t sIQSwitch::get_queue_length(int source, int destination) const {
   if(!(source >= 0 && source < _num_inputs)) throw OutOfBoundaryException("Argument source should be within [0, " + std::to_string(_num_inputs) + ").");
@@ -225,6 +256,10 @@ void gIQSwitch::reset() {
   for (auto &_arrival : _arrivals) {
     _arrival.first = -1;
     _arrival.second = -1;
+  }
+  for (auto &_dep : _departures ) {
+    _dep.first = -1;
+    _dep.second = -1;
   }
 }
 void gIQSwitch::clear() {
