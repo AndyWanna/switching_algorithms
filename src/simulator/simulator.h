@@ -104,6 +104,7 @@ class IQSwitchSimulator : public Simulator {
        << "\nerror bound (for stopping)   : " << _error_bound
        << "\ntraffic patterns             : " << _traffic_pattern_names
        << "\n";
+    if(_switch != nullptr)_switch->display(os);
   }
 
  protected:

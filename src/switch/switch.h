@@ -36,7 +36,7 @@ class Switch {
   int _num_inputs; // # of inputs
   int _num_outputs; // # of outputs
 
-  unsigned _delay{1};// length of each switching cycle
+  unsigned _delay{0};// length of each switching cycle (default: ignoring transmission delay)
   bool _channel_installed{false}; // indicator variable for channel installation
 
   // input channels: channels connecting to each input port, allowing the inputs to read packets from traffic generator

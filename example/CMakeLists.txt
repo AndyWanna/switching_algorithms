@@ -55,7 +55,20 @@ target_link_libraries(switch_example
 list(APPEND saber_example
         switch_example)
 
+
+# simulator
+add_executable(sim_example
+        "simulator_example.cc")
+target_link_libraries(sim_example
+        scheduler
+        switch
+        simulator)
+list(APPEND saber_example
+        sim_example)
+
+
 # Add to customized target example
+# !! Still do not figure out a better to avoid re-compiliation
 add_custom_target(
         example
         COMMAND $<TARGET_FILE:traffic_generator_example>
@@ -63,5 +76,6 @@ add_custom_target(
         COMMAND $<TARGET_FILE:util_example>
         COMMAND $<TARGET_FILE:sched_example>
         COMMAND $<TARGET_FILE:switch_example>
+        COMMAND $<TARGET_FILE:sim_example>
         DEPENDS ${saber_examples}
 )
