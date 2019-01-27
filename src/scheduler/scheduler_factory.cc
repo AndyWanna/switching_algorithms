@@ -76,26 +76,11 @@ Scheduler *SchedulerFactory::Create(const json &conf) {
     unsigned seed = (conf.count("seed") ? conf["seed"].get<unsigned>()
                                         : static_cast<unsigned >(sys_clock_t::now().time_since_epoch().count()));
     sched = new RandomizedEdgeColoringCAggarwal(name, num_inputs, num_outputs, frame_size, seed);
-  } else if (name == "sb_qps") {
+  } else if (name == "sb_qps_half_half_oblivious") {
     int frame_size = (conf.count("frame_size")?conf["frame_size"].get<int>():20);
     unsigned seed = (conf.count("seed") ? conf["seed"].get<unsigned>()
                                         : static_cast<unsigned >(sys_clock_t::now().time_since_epoch().count()));
-    std::string accept_policy{"longest_first"};
-    if (conf.count("seed")) seed = conf["seed"].get<unsigned>();
-    if (conf.count("accept_policy")) accept_policy = conf["accept_policy"].get<std::string>();
-
-    bool allow_adaptive_frame = false;
-    bool allow_retry_previous = false;
-    if ( conf.count("allow_retry_previous")) allow_retry_previous = conf["allow_retry_previous"].get<bool>();
-    if ( conf.count("allow_adaptive_frame")) allow_adaptive_frame = conf["allow_adaptive_frame"].get<bool>();
-
-    sched = new SB_QPS(name + "|" + accept_policy + "|" + (allow_retry_previous ? "retry_previous" : "basic")
-                             + "|" + (allow_adaptive_frame ? "adaptive_frame" : "fixed_frame"),
-                         num_inputs, num_outputs, frame_size, seed,
-                         allow_retry_previous, allow_adaptive_frame, accept_policy);
-
-    //sched->display(std::cout);
-
+    sched = new SB_QPS_HalfHalf_Oblivious(name, num_inputs, num_outputs, frame_size, seed);
   } else {
     throw UnknownParameterException("Unknown scheduler name: " + name + "!");
   }
