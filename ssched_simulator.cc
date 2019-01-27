@@ -81,7 +81,7 @@ void experiment_vs_load(const json &exp_conf, const std::string &metric_name) {
 
     out_filename = metric_name + "_vs_load_" + std::to_string(seed) + ".json";
   } else {
-    out_filename = exp_conf["output"].get<std::string>() + +std::to_string(seed) + ".json";
+    out_filename = exp_conf["output"].get<std::string>() + std::to_string(seed) + ".json";
   }
   std::ofstream of(out_filename, std::ios::out);
   of << results.dump(4) << std::endl;
