@@ -16,6 +16,7 @@ BatchScheduler::BatchScheduler(const std::string &name, int num_inputs, int num_
     _schedules_pre{},
     _pf_rel_time(0)
 { }
+
 void BatchScheduler::reset() {
   _frame_size = _frame_size_init;
   _cf_rel_time = 0;
