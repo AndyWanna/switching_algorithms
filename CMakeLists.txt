@@ -102,7 +102,7 @@ if(ENABLE_HDRHISTOGRAM)
     add_definitions(-DENABLE_HDRHISTOGRAM)
 endif()
 
-
+# add_definitions(-DDEBUG)
 # includes
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/src")
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include/saber")
@@ -116,6 +116,7 @@ add_subdirectory(example)
 # add executable
 add_executable(ssched_simulator
         ssched_simulator.cc)
+#target_compile_definitions(ssched_simulator PUBLIC -DDEBUG)  # -D removed
 target_link_libraries(ssched_simulator
         scheduler
         switch

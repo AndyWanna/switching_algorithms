@@ -12,7 +12,8 @@ SB_QPS_HalfHalf_Oblivious::SB_QPS_HalfHalf_Oblivious(std::string name,
                                                      int frame_size,
                                                      std::mt19937::result_type seed) :
     BatchScheduler(name, num_inputs, num_outputs, frame_size, true),
-    _seed(seed), _eng(seed),
+    _seed(seed),
+    _eng(seed),
     _bst(num_inputs),
     _match_flag_in(num_inputs),
     _match_flag_out(num_outputs),
@@ -22,8 +23,9 @@ SB_QPS_HalfHalf_Oblivious::SB_QPS_HalfHalf_Oblivious(std::string name,
   _cf_rel_time = 0;
   // generate random schedulers (used for the first frame)
   for (auto &sched: _schedules) {
-    for (size_t in = 0; in < _num_inputs; ++in) sched[in] = in;
-    std::shuffle(sched.begin(), sched.end(), _eng);
+//    for (size_t in = 0; in < _num_inputs; ++in) sched[in] = in;
+//    std::shuffle(sched.begin(), sched.end(), _eng);
+    std::fill(sched.begin(), sched.end(), -1);
   }
 }
 
@@ -45,16 +47,17 @@ void SB_QPS_HalfHalf_Oblivious::handle_arrivals(const IQSwitch *sw) {
 }
 
 void SB_QPS_HalfHalf_Oblivious::handle_departures(const std::vector<std::pair<int, int>> &dep_pre) {
-  for (int s = 0; s < _num_inputs; ++s) {
-    auto d = _in_match[s];
-    if (d != -1) {
-      BST::update<int>(_bst[s], d + _left_start, -1);
-      --_cf_packets_counter[s][d];
-    }
-  }
+//  for (int s = 0; s < _num_inputs; ++s) {
+//    auto d = _in_match[s];
+//    if (d != -1) {
+//      BST::update<int>(_bst[s], d + _left_start, -1);
+//      --_cf_packets_counter[s][d];
+//    }
+//  }
   for (const auto &sd : dep_pre) {
     auto s = sd.first;
     auto d = sd.second;
+    assert(_cf_packets_counter[s][d] > 0);
     BST::update<int>(_bst[s], d + _left_start, -1);
     --_cf_packets_counter[s][d];
   }
@@ -69,8 +72,10 @@ int SB_QPS_HalfHalf_Oblivious::sampling(int source) {
 
 #ifdef DEBUG
   std::cerr << "random : " << r << "\n";
+  std::cerr << "in : " << source << "\n";
   std::cerr << "out : " << out << "\n";
   std::cerr << "bst : " << _bst[source] << "\n";
+  std::cerr << "VOQ[i][j] : " << _cf_packets_counter[source][out] << "\n";
 #endif
 
   assert (out >= 0 && out < _num_outputs);
@@ -79,7 +84,6 @@ int SB_QPS_HalfHalf_Oblivious::sampling(int source) {
 
 void SB_QPS_HalfHalf_Oblivious::qps(const saber::IQSwitch *sw, size_t frame_id) {
   assert(_frame_size_fixed);
-  //auto frame_id = (current_ts % _frame_size);
 
   // handle arrivals
   handle_arrivals(sw);
@@ -87,10 +91,8 @@ void SB_QPS_HalfHalf_Oblivious::qps(const saber::IQSwitch *sw, size_t frame_id) 
   // maximum number of accepts for each time slots
   int max_accepts = (((frame_id + 1) * 2 > frame_size()) ? 2 : 1);
 
-  std::vector<std::array<int, 2> > out_accepts;
+  std::vector<std::array<int, 2> > out_accepts(num_outputs());
   for (auto &oac: out_accepts) oac.fill(-1);
-
-
 
   // shuffle inputs
   std::vector<int> inputs(_num_inputs, 0);
@@ -102,18 +104,20 @@ void SB_QPS_HalfHalf_Oblivious::qps(const saber::IQSwitch *sw, size_t frame_id) 
     int in = inputs[i];
     if (queue_length(in) == 0) continue;// no packets
     auto out = sampling(in);// sampling an output for this input
+    assert(_cf_packets_counter[in][out] > 0);
 
     if (max_accepts > 1 && out_accepts[out][1] != -1) {
-      if (sw->get_queue_length(in, out) > sw->get_queue_length(out_accepts[out][0], out)) {
+     // if (sw->get_queue_length(in, out) > sw->get_queue_length(out_accepts[out][0], out)) {
+     if(_cf_packets_counter[in][out] > _cf_packets_counter[out_accepts[out][0]][out]){
         out_accepts[out][1] = out_accepts[out][0];
         out_accepts[out][0] = in;
-      } else if (sw->get_queue_length(in, out) > sw->get_queue_length(out_accepts[out][1], out)) {
+      } else if (_cf_packets_counter[in][out] > _cf_packets_counter[out_accepts[out][1]][out]) {
         out_accepts[out][1] = in;
       }
     } else {
       if (out_accepts[out][0] == -1) out_accepts[out][0] = in;
       else {
-        if (sw->get_queue_length(in, out) > sw->get_queue_length(out_accepts[out][0], out)) {
+        if (_cf_packets_counter[in][out] > _cf_packets_counter[out_accepts[out][0]][out]) {
           out_accepts[out][1] = out_accepts[out][0];
           out_accepts[out][0] = in;
         } else {
@@ -124,20 +128,22 @@ void SB_QPS_HalfHalf_Oblivious::qps(const saber::IQSwitch *sw, size_t frame_id) 
 
   }
 
-  std::vector<std::pair<int, int>> dep_pre;// departures from previous time slots within this frame
+  std::vector<std::pair<int, int>> vdep;// virtual departures
   // Step 2: Accept
   for (int out = 0; out < _num_outputs; ++out) {
     if (out_accepts[out][0] == -1) continue;
     if (max_accepts > 1 && out_accepts[out][1] != -1) {
       int in = out_accepts[out][1];
-      auto mf = _match_flag_in[in] & _match_flag_out[out];
+      // available only when both available
+      auto mf = (_match_flag_in[in] | _match_flag_out[out]);
       for (int f = (int) (frame_id) - 1; f >= 0; --f) {
-        if (mf.test(f)) {
+        if (!mf.test(f)) {
           _match_flag_in[in].set(f);
           _match_flag_out[out].set(f);
           assert(_schedules[f][in] == -1);
           _schedules[f][in] = out;
-          dep_pre.emplace_back(in, out);
+          vdep.emplace_back(in, out);
+          break;// pay special attention (first fit)
         }
       }
     }
@@ -145,9 +151,14 @@ void SB_QPS_HalfHalf_Oblivious::qps(const saber::IQSwitch *sw, size_t frame_id) 
     _match_flag_in[in].set(frame_id);
     _match_flag_out[out].set(frame_id);
     _schedules[frame_id][in] = out;
+    vdep.emplace_back(in, out);
   }
 
-  handle_departures(dep_pre);
+#ifdef DEBUG
+  std::cerr << _cf_packets_counter << "\n";
+  std::cerr << vdep << "\n\n";
+#endif
+  handle_departures(vdep);
 }
 
 void SB_QPS_HalfHalf_Oblivious::init(const IQSwitch *sw) {
@@ -162,8 +173,8 @@ void SB_QPS_HalfHalf_Oblivious::schedule(const saber::IQSwitch *sw) {
 
   qps(sw, frame_id);
 
-  // reset bit map
-  if (frame_id == 0) bitmap_reset();
+  // reset bit map, if it is the last time slot of a frame
+  if (frame_id == _frame_size - 1) bitmap_reset();
 
   ++_cf_rel_time;
 }
@@ -177,8 +188,9 @@ void SB_QPS_HalfHalf_Oblivious::reset() {
     std::fill(counter.begin(), counter.end(), 0);
   _cf_rel_time = 0;
   for (auto &sched: _schedules) {
-    for (size_t in = 0; in < num_inputs(); ++in) sched[in] = in;
-    std::shuffle(sched.begin(), sched.end(), _eng);
+//    for (size_t in = 0; in < num_inputs(); ++in) sched[in] = in;
+//    std::shuffle(sched.begin(), sched.end(), _eng);
+    std::fill(sched.begin(), sched.end(), -1);
   }
 }
 

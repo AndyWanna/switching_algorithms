@@ -50,6 +50,11 @@ void experiment_vs_load(const json &exp_conf, const std::string &metric_name) {
     std::string scheduler_name = sched_conf["name"].get<std::string>();
     simulator_conf["scheduler"] = sched_conf;
 
+#ifdef DEBUG
+    std::cerr << "Simulator configuration:\n";
+    std::cerr << simulator_conf.dump(4) << "\n";
+#endif
+
     try {
       simulator = SimulatorFactory::Create(simulator_conf);
       if (simulator != nullptr) {
