@@ -52,7 +52,49 @@ class SB_QPS_HalfHalf_Oblivious : public BatchScheduler {
   void display(std::ostream &os) const override ;
   //// reserved
   void dump_stats(std::ostream &os) override {}
-};
+};// SB_QPS_HalfHalf_Oblivious
+//
+class SB_QPS_HalfHalf_AvailabilityAware : public BatchScheduler {
+  friend class SchedulerFactory;
+ protected:
+  using bst_t = std::vector<int>;
+  using bitmap_t = std::bitset<128>;
+  std::mt19937::result_type _seed;
+  std::mt19937 _eng{std::random_device{}()};
+
+  int _left_start{-1};
+  std::vector<bst_t> _bst;
+
+  // bitmaps for each input & output
+  std::vector<bitmap_t>  _match_flag_in;
+  std::vector<bitmap_t>  _match_flag_out;
+
+  // counter of packets
+  std::vector<std::vector<int> > _cf_packets_counter;
+  std::vector<int> _output_availability;
+  std::vector<int> _input_availability;
+
+  SB_QPS_HalfHalf_AvailabilityAware(std::string name, int num_inputs, int num_outputs, int frame_size,
+      std::mt19937::result_type seed) ;
+  void bitmap_reset() ;
+  void handle_arrivals(const IQSwitch *sw);
+  void handle_departures(const std::vector<std::pair<int, int>>& dep_pre);
+  int sampling(int source);
+  int queue_length(int source) {
+    assert (source >= 0 && source < _num_inputs);
+    return _bst[source][1];
+  }
+  void qps(const IQSwitch *sw, size_t current_ts);
+ public:
+  ~SB_QPS_HalfHalf_AvailabilityAware() override = default;
+  void schedule(const IQSwitch *sw) override;
+  void init(const IQSwitch *sw) override;
+  void reset() override ;
+  void display(std::ostream &os) const override ;
+  //// reserved
+  void dump_stats(std::ostream &os) override {}
+};// SQ_QPS_HalfHalf_AvailalityAware
+
 } // namespace saber
 
 #endif // SB_QPS_H
