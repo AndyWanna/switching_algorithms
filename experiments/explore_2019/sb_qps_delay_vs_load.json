@@ -2,9 +2,9 @@
   "type": "delay_vs_load",
   "simulator": {
     "name": "IQSwitchSimulator",
-    "num_inputs": 16,
-    "num_outputs": 16,
-    "load": [0.1, 0.2, 0.3],
+    "num_inputs": 64,
+    "num_outputs": 64,
+    "load": [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.91, 0.92, 0.93, 0.94, 0.95, 0.96, 0.97, 0.98, 0.99],
     "traffic_patterns": [
       "uniform",
       "quasi_diagonal",
