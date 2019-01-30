@@ -86,6 +86,16 @@ Scheduler *SchedulerFactory::Create(const json &conf) {
     unsigned seed = (conf.count("seed") ? conf["seed"].get<unsigned>()
                                         : static_cast<unsigned >(sys_clock_t::now().time_since_epoch().count()));
     sched = new SB_QPS_HalfHalf_AvailabilityAware(name, num_inputs, num_outputs, frame_size, seed);
+  } else if (name == "sb_qps_adaptive") {
+    int frame_size = (conf.count("frame_size")?conf["frame_size"].get<int>():20);
+    unsigned seed = (conf.count("seed") ? conf["seed"].get<unsigned>()
+                                        : static_cast<unsigned >(sys_clock_t::now().time_since_epoch().count()));
+    sched = new SB_QPS_Adaptive(name, num_inputs, num_outputs, frame_size, seed);
+  } else if (name == "sb_qps_basic") {
+    int frame_size = (conf.count("frame_size")?conf["frame_size"].get<int>():20);
+    unsigned seed = (conf.count("seed") ? conf["seed"].get<unsigned>()
+                                        : static_cast<unsigned >(sys_clock_t::now().time_since_epoch().count()));
+    sched = new SB_QPS_Basic(name, num_inputs, num_outputs, frame_size, seed);
   } else {
     throw UnknownParameterException("Unknown scheduler name: " + name + "!");
   }

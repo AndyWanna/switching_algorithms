@@ -50,8 +50,14 @@ void experiment_vs_load(const json &exp_conf, const std::string &metric_name) {
   Simulator *simulator = nullptr;
   json simulator_conf;
   json results;
-  const auto& tp = exp_conf["simulator"]["traffic_patterns"].get<std::vector<std::string>>();
-  std::set<std::string> traffic_patterns(tp.cbegin(), tp.cend());
+  //const auto& tp = exp_conf["simulator"]["traffic_patterns"].get<std::vector<std::string>>();
+  std::set<std::string> traffic_patterns = {
+      "uniform",
+      "quasi-diagonal",
+      "log-diagonal",
+      "diagonal"
+  };
+
 
   for (json::const_iterator it = exp_conf["simulator"].cbegin(), e_it = exp_conf["simulator"].cend(); it != e_it; ++it)
     simulator_conf[it.key()] = it.value();
@@ -64,7 +70,6 @@ void experiment_vs_load(const json &exp_conf, const std::string &metric_name) {
     std::cerr << "Simulator configuration:\n";
     std::cerr << simulator_conf.dump(4) << "\n";
 #endif
-
     try {
       simulator = SimulatorFactory::Create(simulator_conf);
       if (simulator != nullptr) {

@@ -4,7 +4,7 @@
     "name": "IQSwitchSimulator",
     "num_inputs": 16,
     "num_outputs": 16,
-    "load": [0.1, 0.3, 0.5],
+    "load": [0.1, 0.2, 0.3],
     "traffic_patterns": [
       "uniform",
       "quasi_diagonal",
@@ -24,6 +24,14 @@
     }
   },
   "schedulers": [
+    {
+      "name": "sb_qps_adaptive",
+      "frame_size": 20
+    },
+    {
+      "name": "sb_qps_basic",
+      "frame_size": 20
+    },
     {
       "name": "sb_qps_half_half_availability_aware",
       "frame_size": 20
