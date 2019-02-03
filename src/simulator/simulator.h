@@ -118,6 +118,9 @@ class IQSwitchSimulator : public Simulator {
   // Default values for simulation efforts
   const int MIN_EFFORT_C{100};
   const int MAX_EFFORT_C{5000};
+  // added @02/03/2019
+  double _max_mem_ratio{0.618};
+  const unsigned long long TOT_MEM;
   // stopping related parameter
   int _least_simulation_effort{-1};
   int _most_simulation_effort{-1};

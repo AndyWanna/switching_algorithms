@@ -3,7 +3,7 @@
 
 #include <exceptions.hpp>
 #include "simulator.h"
-
+#include <mem_utils.hpp>
 namespace saber {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////              Static Variable Initialization      ///////////////////////////////////////
@@ -24,6 +24,7 @@ IQSwitchSimulator::IQSwitchSimulator(std::string name,
                                      int num_outputs,
                                      const json &conf) : Simulator(std::move(name), verbose), _num_inputs(num_inputs),
                                                          _num_outputs(num_outputs),
+                                                         TOT_MEM(getTotalSystemMemory()),
                                                          _input_channels(num_inputs, nullptr),
                                                          _output_channels(num_outputs, nullptr) {
   long long n_sq = num_inputs * num_outputs;
@@ -225,8 +226,6 @@ bool IQSwitchSimulator::fix_stopping_rule(size_t n, double stddev_est) const {
   if (n <= _least_simulation_effort)
     return false;
   if (n == _most_simulation_effort) {
-//    std::cerr << "\n\nWARNING: It seems that we cannot converge to a stage where the error "
-//                 "bound is under the threshold\n\n" << std::endl;
     return true;
   }
   return (_student_t * stddev_est / std::sqrt(n) + 1.0 / n < _error_bound);
@@ -235,8 +234,6 @@ bool IQSwitchSimulator::rel_stopping_rule(size_t n, double stddev_est, double av
   if (n <= _least_simulation_effort)
     return false;
   if (n == _most_simulation_effort) {
-//    std::cerr << "\n\nWARNING: It seems that we cannot converge to a stage where the error "
-//                 "bound is under the threshold\n\n" << std::endl;
     return true;
   }
   return (_student_t * stddev_est / std::sqrt(n) + 1.0 / n < (_error_bound * average));
@@ -359,6 +356,8 @@ bool IQSwitchSimulator::simulate_on(InjectionModel *injection, TrafficPattern *t
   std::string stopping_ins = (has_delay_ins?"delay":"totalQueueLength");
   auto &throughput_ins = _instruments["throughput"];
 
+  const unsigned long long pkt_size = sizeof(Packet) * 8; // size of each packet
+  const double max_num_pkts = (TOT_MEM * _max_mem_ratio) / pkt_size;
 
   while (!stop_now(n, stddev_est, avg_est)) {
     // arrival
@@ -403,6 +402,10 @@ bool IQSwitchSimulator::simulate_on(InjectionModel *injection, TrafficPattern *t
                                                (has_total_queue_len_ins?_instruments["totalQueueLength"]->variance():NaN));
       }
       std::cout << "\n";
+    }
+    if (n > _least_simulation_effort && num_stall_packets > max_num_pkts) {
+      // protect the system from draining out of memory
+      break;
     }
   }
 
@@ -475,13 +478,14 @@ void IQSwitchSimulator::simulate() {
 
     for (auto &traf : _traffic_patterns) {
       TrafficPattern *traffic = traf.second;
-      if (stable_region_boundary.count(traffic->name()) && stable_region_boundary[traffic->name()] >= _current_load){
-        // skip it
+      if (stable_region_boundary.count(traffic->name()) && stable_region_boundary[traffic->name()] <= _current_load){
+        // skip it, as current load is of our boundary
       } else {
-        if (!simulate_on(injection, traffic, first_call)) {// unstable
-          if (_stats_results[traffic->name()]["throughput"].back() < thres_throughput)
-            stable_region_boundary[traffic->name()] = _current_load;
-        }
+       // if (!simulate_on(injection, traffic, first_call)) {// unstable
+        simulate_on(injection, traffic, first_call);
+        if (_stats_results[traffic->name()]["throughput"].back() < thres_throughput)
+          stable_region_boundary[traffic->name()] = _current_load;
+        //}
       }
       // call reset
       IQSwitchSimulator::reset();
