@@ -13,4 +13,5 @@
     + Similar as Oblivious Half & Half SQ-QPS, but checking availability (not just limited to the second longest, all proposals can try previous time slots. However, when contention happens, longer proposals win)
 + [X] Adaptive SB-QPS:
     + A simple extension to AA-H&H-SB-QPS: allow trying previous ones as long as there are available ones
++ [ ] Multi-Iter Versions
 
