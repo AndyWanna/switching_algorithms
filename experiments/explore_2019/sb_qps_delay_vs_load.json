@@ -25,6 +25,14 @@
   },
   "schedulers": [
     {
+      "name": "sb_qps_half_half_ma",
+      "frame_size": 30
+    },
+    {
+      "name": "sb_qps_half_half_ma_mi",
+      "frame_size": 30
+    },
+    {
       "name": "sb_qps_three_third_mi",
       "frame_size": 30
     },
