@@ -14,5 +14,5 @@
 + [X] Adaptive SB-QPS:
     + A simple extension to AA-H&H-SB-QPS: allow trying previous ones as long as there are available ones
 + [X] Multi-Iter Versions
-+ [ ] Multi-Accept Multi-Iter Versions
++ [X] Multi-Accept Multi-Iter Versions
 
