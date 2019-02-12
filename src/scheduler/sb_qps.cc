@@ -309,7 +309,7 @@ void SB_QPS_HalfHalf_AvailabilityAware::qps(const saber::IQSwitch *sw, size_t fr
       // and whenever if fails, we just find the largest element and
       // move it to the beginning of the vector!
       std::sort(out_accepts[out].begin(), out_accepts[out].end(), [=](const int in1, const int in2){
-        return _cf_packets_counter[in1][out] < _cf_packets_counter[in2][out];
+        return _cf_packets_counter[in1][out] > _cf_packets_counter[in2][out];
       });
 
       for (int i = 1; i < std::min(max_accepts, (int)out_accepts[out].size()) && _output_availability[out] > 0; ++i) {
@@ -520,7 +520,7 @@ void SB_QPS_Adaptive::qps(const saber::IQSwitch *sw, size_t frame_id) {
       // and whenever if fails, we just find the largest element and
       // move it to the beginning of the vector!
       std::sort(out_accepts[out].begin(), out_accepts[out].end(), [=](const int in1, const int in2){
-        return _cf_packets_counter[in1][out] < _cf_packets_counter[in2][out];
+        return _cf_packets_counter[in1][out] > _cf_packets_counter[in2][out];
       });
 
       for (int i = 1; i < std::min(max_accepts[out], (int)out_accepts[out].size()) && _output_availability[out] > 0; ++i) {
@@ -887,7 +887,7 @@ void SB_QPS_HalfHalf_MI::_qps(size_t frame_id){
       // and whenever if fails, we just find the largest element and
       // move it to the beginning of the vector!
       std::sort(out_accepts[out].begin(), out_accepts[out].end(), [=](const int in1, const int in2){
-        return _cf_packets_counter[in1][out] < _cf_packets_counter[in2][out];
+        return _cf_packets_counter[in1][out] > _cf_packets_counter[in2][out];
       });
 
       for (int i = 1; i < std::min(max_accepts, (int)out_accepts[out].size()) && _output_availability[out] > 0; ++i) {
@@ -1100,7 +1100,7 @@ void SB_QPS_ThreeThird_MI::_qps(size_t frame_id){
       // and whenever if fails, we just find the largest element and
       // move it to the beginning of the vector!
       std::sort(out_accepts[out].begin(), out_accepts[out].end(), [=](const int in1, const int in2){
-        return _cf_packets_counter[in1][out] < _cf_packets_counter[in2][out];
+        return _cf_packets_counter[in1][out] > _cf_packets_counter[in2][out];
       });
 
       for (int i = 1; i < std::min(max_accepts, (int)out_accepts[out].size()) && _output_availability[out] > 0; ++i) {
@@ -1249,7 +1249,7 @@ void SB_QPS_HalfHalf_MA::handle_departures(const std::vector<std::pair<int, int>
   for (const auto &sd : dep_pre) {
     auto s = sd.first;
     auto d = sd.second;
-    assert(_cf_packets_counter[s][d] > 0);
+    //assert(_cf_packets_counter[s][d] > 0);
     BST::update<int>(_bst[s], d + _left_start, -1);
   }
 }
@@ -1308,42 +1308,44 @@ void SB_QPS_HalfHalf_MA::_qps(size_t frame_id){
   // Step 2: Accept
   for (int out = 0; out < _num_outputs; ++out) {
     if (out_accepts[out].empty()) continue;
-    if (max_accepts > 1) {
-      // sort proposals based on VOQ lengths
-      // actually we can optimize by move sorting inside the if check
-      // and whenever if fails, we just find the largest element and
-      // move it to the beginning of the vector!
-      std::sort(out_accepts[out].begin(), out_accepts[out].end(), [=](const int in1, const int in2){
-        return _cf_packets_counter[in1][out] < _cf_packets_counter[in2][out];
-      });
+//    if (max_accepts > 1) {
+    // sort proposals based on VOQ lengths
+    // actually we can optimize by move sorting inside the if check
+    // and whenever if fails, we just find the largest element and
+    // move it to the beginning of the vector!
+    std::sort(out_accepts[out].begin(), out_accepts[out].end(), [=](const int in1, const int in2) {
+      return _cf_packets_counter[in1][out] > _cf_packets_counter[in2][out];
+    });
 
-      for (int i = 1; i < std::min(max_accepts, (int)out_accepts[out].size()) && _output_availability[out] > 0; ++i) {
-        int in = out_accepts[out][i];
-        if (_input_availability[in] == 0 || _cf_packets_counter[in][out] == 0) continue; // no available ts or VOQ is empty
-        // available only when both available
-        auto mf = (_match_flag_in[in] | _match_flag_out[out]);
-        for (int f = (int) (frame_id) - 1; f >= 0; --f) {
-          if (!mf.test(f)) {
-            _match_flag_in[in].set(f);
-            _match_flag_out[out].set(f);
-            -- _input_availability[in];
-            -- _output_availability[out];
-            -- _cf_packets_counter[in][out];
-            assert(_schedules[f][in] == -1);
-            _schedules[f][in] = out;
-            vdep.emplace_back(in, out);
-          }
+    for (int i = 0; i < std::min(max_accepts, (int) out_accepts[out].size()) && _output_availability[out] > 0; ++i) {
+      int in = out_accepts[out][i];
+      if (_input_availability[in] == 0 || _cf_packets_counter[in][out] == 0)
+        continue; // no available ts or VOQ is empty
+      // available only when both available
+      auto mf = (_match_flag_in[in] | _match_flag_out[out]);
+      for (auto f = (int) (frame_id); f >= 0; --f) {
+        if (!mf.test(f)) {
+          _match_flag_in[in].set(f);
+          _match_flag_out[out].set(f);
+          --_input_availability[in];
+          --_output_availability[out];
+          --_cf_packets_counter[in][out];
+          assert(_schedules[f][in] == -1);
+          _schedules[f][in] = out;
+          if (f == frame_id) out_match[out] = in;
+          vdep.emplace_back(in, out);
         }
       }
     }
+//    }
 
-    int in = out_accepts[out][0];
-    _match_flag_in[in].set(frame_id);
-    _match_flag_out[out].set(frame_id);
-    _schedules[frame_id][in] = out;
-    -- _cf_packets_counter[in][out];
-    out_match[out] = in;
-    vdep.emplace_back(in, out);
+//    int in = out_accepts[out][0];
+//    _match_flag_in[in].set(frame_id);
+//    _match_flag_out[out].set(frame_id);
+//    _schedules[frame_id][in] = out;
+//    -- _cf_packets_counter[in][out];
+//    out_match[out] = in;
+//    vdep.emplace_back(in, out);
   }
 
   for (int in = 0;in < num_inputs();++ in) {
@@ -1459,7 +1461,7 @@ void SB_QPS_HalfHalf_MA_MI::handle_departures(const std::vector<std::pair<int, i
   for (const auto &sd : dep_pre) {
     auto s = sd.first;
     auto d = sd.second;
-    assert(_cf_packets_counter[s][d] > 0);
+    //assert(_cf_packets_counter[s][d] > 0);
     BST::update<int>(_bst[s], d + _left_start, -1);
   }
 }
@@ -1518,21 +1520,21 @@ void SB_QPS_HalfHalf_MA_MI::_qps(size_t frame_id){
   // Step 2: Accept
   for (int out = 0; out < _num_outputs; ++out) {
     if (out_accepts[out].empty()) continue;
-    if (max_accepts > 1) {
+//    if (max_accepts > 1) {
       // sort proposals based on VOQ lengths
       // actually we can optimize by move sorting inside the if check
       // and whenever if fails, we just find the largest element and
       // move it to the beginning of the vector!
       std::sort(out_accepts[out].begin(), out_accepts[out].end(), [=](const int in1, const int in2){
-        return _cf_packets_counter[in1][out] < _cf_packets_counter[in2][out];
+        return _cf_packets_counter[in1][out] > _cf_packets_counter[in2][out];
       });
 
-      for (int i = 1; i < std::min(max_accepts, (int)out_accepts[out].size()) && _output_availability[out] > 0; ++i) {
+      for (int i = 0; i < std::min(max_accepts, (int)out_accepts[out].size()) && _output_availability[out] > 0; ++i) {
         int in = out_accepts[out][i];
         if (_input_availability[in] == 0 || _cf_packets_counter[in][out] == 0) continue; // no available ts or VOQ is empty
         // available only when both available
         auto mf = (_match_flag_in[in] | _match_flag_out[out]);
-        for (int f = (int) (frame_id) - 1; f >= 0; --f) {
+        for (int f = (int) (frame_id) ; f >= 0; --f) {
           if (!mf.test(f)) {
             _match_flag_in[in].set(f);
             _match_flag_out[out].set(f);
@@ -1541,19 +1543,20 @@ void SB_QPS_HalfHalf_MA_MI::_qps(size_t frame_id){
             -- _cf_packets_counter[in][out];
             assert(_schedules[f][in] == -1);
             _schedules[f][in] = out;
+            if(f == frame_id) out_match[out] = in;
             vdep.emplace_back(in, out);
           }
         }
       }
-    }
+//    }
 
-    int in = out_accepts[out][0];
-    _match_flag_in[in].set(frame_id);
-    _match_flag_out[out].set(frame_id);
-    _schedules[frame_id][in] = out;
-    -- _cf_packets_counter[in][out];
-    out_match[out] = in;
-    vdep.emplace_back(in, out);
+//    int in = out_accepts[out][0];
+//    _match_flag_in[in].set(frame_id);
+//    _match_flag_out[out].set(frame_id);
+//    _schedules[frame_id][in] = out;
+//    -- _cf_packets_counter[in][out];
+//    out_match[out] = in;
+//    vdep.emplace_back(in, out);
   }
 
   for (int in = 0;in < num_inputs();++ in) {
