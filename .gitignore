@@ -1,4 +1,6 @@
-.idea
-build
-build-*
-cmake-*
+software-alg/.idea
+software-alg/build
+software-alg/build-*
+software-alg/cmake-*
+
+hardware-hls/*phase1_test
