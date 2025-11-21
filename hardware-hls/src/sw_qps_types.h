@@ -59,7 +59,7 @@ struct VOQState {
     queue_len_t sum;            // Total packets (sum of all VOQs)
     avail_bitmap_t availability; // Which slots this input is free
     
-    VOQState() : sum(0), availability((1 << T) - 1) {
+    VOQState() : sum(0), availability(~avail_bitmap_t(0)) {
         #pragma HLS ARRAY_PARTITION variable=lengths complete
         for (int i = 0; i < N; i++) {
             lengths[i] = 0;
@@ -72,7 +72,7 @@ struct Calendar {
     port_id_t schedule[T];      // Which input for each slot
     avail_bitmap_t availability; // Which slots are still free
     
-    Calendar() : availability((1 << T) - 1) {
+    Calendar() : availability(~avail_bitmap_t(0)) {
         #pragma HLS ARRAY_PARTITION variable=schedule complete
         for (int i = 0; i < T; i++) {
             schedule[i] = INVALID_PORT;

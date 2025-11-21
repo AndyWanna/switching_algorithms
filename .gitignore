@@ -4,3 +4,4 @@ software-alg/build-*
 software-alg/cmake-*
 
 hardware-hls/*phase1_test
+hardware-hls/sw_qps_project/solution1/
