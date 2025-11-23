@@ -33,11 +33,12 @@ typedef ap_uint<32> random_t;           // Random number
 // Proposal message: Input -> Output
 struct Proposal {
     port_id_t input_id;         // Which input port sent this
+    port_id_t output_id;        // Which output port this targets
     queue_len_t voq_len;        // Length of corresponding VOQ
     avail_bitmap_t availability; // Which slots input is free
     bool valid;                 // Is this proposal valid?
     
-    Proposal() : input_id(0), voq_len(0), availability(0), valid(false) {}
+    Proposal() : input_id(0), output_id(INVALID_PORT), voq_len(0), availability(0), valid(false) {}
 };
 
 // Accept message: Output -> Input

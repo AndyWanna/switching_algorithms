@@ -93,23 +93,8 @@ public:
             Proposal prop = input_ports[i].generateProposal();
             
             if (prop.valid) {
-                // Route proposal to appropriate output port
-                // In hardware, this would be a crossbar network
-                // For now, we'll simulate with array indexing
-                
-                // Find which output was sampled (need to track this)
-                // For simplicity, sample again to determine output
-                // In real implementation, this would be part of generateProposal
-                random_t temp_rand = i * 12345 + current_time_slot;
-                port_id_t target_output = input_ports[i].getVOQLength(0) > 0 ? 0 : INVALID_PORT;
-                
-                // Better approach: scan VOQs to find which was selected
-                for (int j = 0; j < N; j++) {
-                    if (input_ports[i].getVOQLength(j) == prop.voq_len) {
-                        target_output = j;
-                        break;
-                    }
-                }
+                // Now we have the output port directly from the proposal!
+                port_id_t target_output = prop.output_id;
                 
                 if (target_output != INVALID_PORT && target_output < N) {
                     int idx = num_proposals_per_output[target_output];
@@ -139,21 +124,13 @@ public:
             for (int j = 0; j < num_accepts; j++) {
                 #pragma HLS LOOP_TRIPCOUNT min=0 max=1
                 if (accepts[j].valid) {
-                    port_id_t input_id = INVALID_PORT;
-                    
-                    // Find which input this accept is for
+                    // Find which input this accept is for from the proposals
                     for (int k = 0; k < num_proposals_per_output[i]; k++) {
-                        if (proposals_per_output[i][k].input_id == input_id) {
-                            input_id = proposals_per_output[i][k].input_id;
-                            break;
-                        }
-                    }
-                    
-                    // For now, broadcast to the matched input
-                    // In real hardware, this would be routed properly
-                    for (int k = 0; k < N; k++) {
-                        if (k == accepts[j].output_id) {
-                            input_ports[k].processAccept(accepts[j]);
+                        if (proposals_per_output[i][k].valid) {
+                            port_id_t input_id = proposals_per_output[i][k].input_id;
+                            if (input_id < N) {
+                                input_ports[input_id].processAccept(accepts[j]);
+                            }
                         }
                     }
                 }

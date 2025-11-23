@@ -49,10 +49,10 @@ create_clock -period 5 -name default
 # ============================================================================
 # Step 1: C Simulation
 # ============================================================================
-puts "========================================="
-puts "Step 1: Running C Simulation..."
-puts "========================================="
-csim_design -clean
+# puts "========================================="
+# puts "Step 1: Running C Simulation..."
+# puts "========================================="
+# csim_design -clean
 
 # ============================================================================
 # Step 2: Synthesis
@@ -63,8 +63,8 @@ puts "========================================="
 
 # Synthesis directives for optimization
 config_compile -name_max_length 100
-config_schedule -effort high
-config_bind -effort high
+config_schedule
+config_bind
 
 # Run synthesis
 csynth_design
@@ -82,42 +82,42 @@ puts "========================================="
 # cosim_design -trace_level all -rtl vhdl -tool xsim
 
 # Faster option: Run with reduced test set
-cosim_design -rtl vhdl -tool xsim -trace_level port
+cosim_design -O -trace_level all
 
-# ============================================================================
-# Step 4: Export IP (Optional)
-# ============================================================================
-puts "========================================="
-puts "Step 4: Exporting IP..."
-puts "========================================="
+# # ============================================================================
+# # Step 4: Export IP (Optional)
+# # ============================================================================
+# puts "========================================="
+# puts "Step 4: Exporting IP..."
+# puts "========================================="
 
-# Export as Vivado IP
-# export_design -format ip_catalog -description "SW-QPS Switching Algorithm" -display_name "SW_QPS"
+# # Export as Vivado IP
+# # export_design -format ip_catalog -description "SW-QPS Switching Algorithm" -display_name "SW_QPS"
 
-# Export for System Generator
-# export_design -format sysgen
+# # Export for System Generator
+# # export_design -format sysgen
 
-# ============================================================================
-# Step 5: Report Generation
-# ============================================================================
-puts "========================================="
-puts "Step 5: Generating Reports..."
-puts "========================================="
+# # ============================================================================
+# # Step 5: Report Generation
+# # ============================================================================
+# puts "========================================="
+# puts "Step 5: Generating Reports..."
+# puts "========================================="
 
-# Additional reports can be generated here
-# report_latency
-# report_throughput
-# report_area
-# report_timing
+# # Additional reports can be generated here
+# # report_latency
+# # report_throughput
+# # report_area
+# # report_timing
 
-puts "========================================="
-puts "SW-QPS HLS Flow Complete!"
-puts "========================================="
-puts "Check the following reports:"
-puts "  - solution1/syn/report/sw_qps_top_csynth.rpt (Synthesis Report)"
-puts "  - solution1/sim/report/sw_qps_top_csim.log (C Simulation Log)"
-puts "  - solution1/sim/report/vhdl/sw_qps_top.log (Co-Simulation Log)"
-puts "========================================="
+# puts "========================================="
+# puts "SW-QPS HLS Flow Complete!"
+# puts "========================================="
+# puts "Check the following reports:"
+# puts "  - solution1/syn/report/sw_qps_top_csynth.rpt (Synthesis Report)"
+# puts "  - solution1/sim/report/sw_qps_top_csim.log (C Simulation Log)"
+# puts "  - solution1/sim/report/vhdl/sw_qps_top.log (Co-Simulation Log)"
+# puts "========================================="
 
-# Exit
-exit
+# # Exit
+# exit

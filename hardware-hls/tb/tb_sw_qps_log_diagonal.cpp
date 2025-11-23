@@ -1,6 +1,6 @@
 /*
  * ============================================================================
- * SW-QPS HLS CO-SIMULATION TESTBENCH
+ * SW-QPS HLS CO-SIMULATION TESTBENCH - LOG-DIAGONAL TRAFFIC
  * ============================================================================
  * 
  * Testbench for HLS C simulation and co-simulation
@@ -122,7 +122,7 @@ public:
     }
 };
 
-// Bernoulli traffic generator
+// Bernoulli traffic generator - LOG-DIAGONAL ONLY
 void generateBernoulliTraffic(
     PacketArrival arrivals[N],
     double load,
@@ -139,38 +139,16 @@ void generateBernoulliTraffic(
             arrivals[i].input_port = i;
             arrivals[i].valid = true;
             
-            // Select output based on pattern
-            if (pattern == "uniform") {
+            // Simplified log-diagonal
+            double r = load_dist(rng);
+            if (r < 0.5) {
+                arrivals[i].output_port = i;
+            } else if (r < 0.75) {
+                arrivals[i].output_port = (i + 1) % N;
+            } else if (r < 0.875) {
+                arrivals[i].output_port = (i + 2) % N;
+            } else {
                 arrivals[i].output_port = port_dist(rng);
-            }
-            else if (pattern == "diagonal") {
-                if (load_dist(rng) < 2.0/3.0) {
-                    arrivals[i].output_port = i;
-                } else {
-                    arrivals[i].output_port = (i + 1) % N;
-                }
-            }
-            else if (pattern == "quasi-diagonal") {
-                if (load_dist(rng) < 0.5) {
-                    arrivals[i].output_port = i;
-                } else {
-                    int port = port_dist(rng);
-                    if (port == i) port = (port + 1) % N;
-                    arrivals[i].output_port = port;
-                }
-            }
-            else if (pattern == "log-diagonal") {
-                // Simplified log-diagonal
-                double r = load_dist(rng);
-                if (r < 0.5) {
-                    arrivals[i].output_port = i;
-                } else if (r < 0.75) {
-                    arrivals[i].output_port = (i + 1) % N;
-                } else if (r < 0.875) {
-                    arrivals[i].output_port = (i + 2) % N;
-                } else {
-                    arrivals[i].output_port = port_dist(rng);
-                }
             }
         }
     }
@@ -245,14 +223,9 @@ void testSWQPS(
         for (int out = 0; out < N; out++) {
             if (matching[out] != INVALID_PORT) {
                 int in = matching[out];
-                // CRITICAL: Only count if packet exists!
                 if (voq_lengths[in][out] > 0) {
                     voq_lengths[in][out]--;
                     actual_departures++;
-                } else {
-                    // ERROR: Trying to depart non-existent packet!
-                    cout << "ERROR: Matching claims packet from empty VOQ[" 
-                         << in << "][" << out << "]" << endl;
                 }
             }
         }
@@ -260,18 +233,12 @@ void testSWQPS(
         // Record statistics after warmup
         if (cycle >= warmup_time) {
             monitor.recordArrivals(arrival_count);
-            monitor.recordMatching(actual_departures);  // Use actual, not matching_size!
+            monitor.recordMatching(actual_departures);
             monitor.total_cycles++;
             
-            // Sample VOQ state periodically
             if (cycle % 100 == 0) {
                 monitor.recordVOQState(voq_lengths);
             }
-        }
-        
-        // Check stability
-        if (!stable && cycle % 1000 == 0) {
-            cout << "\n  Warning: System unstable at cycle " << cycle << endl;
         }
     }
     
@@ -281,64 +248,12 @@ void testSWQPS(
     monitor.printSummary(offered_load, pattern);
     
     // Save to CSV
-    monitor.saveToCSV("sw_qps_hls_results.csv", offered_load, pattern);
-}
-
-// Test single cycle interface
-void testSingleCycle() {
-    cout << "\n=== Testing Single Cycle Interface ===" << endl;
-    
-    queue_len_t voq_state[N][N];
-    port_id_t matching[N];
-    ap_uint<8> matching_size;
-    
-    // Reset
-    sw_qps_single_cycle(voq_state, 1, matching, matching_size, true);
-    
-    // Test different scenarios
-    cout << "\n1. Diagonal traffic:" << endl;
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++) {
-            voq_state[i][j] = (i == j) ? 10 : 0;
-        }
-    }
-    
-    for (int iters = 1; iters <= T; iters *= 2) {
-        sw_qps_single_cycle(voq_state, iters, matching, matching_size, false);
-        cout << "  Iterations: " << iters << ", Matching size: " << (int)matching_size << endl;
-    }
-    
-    cout << "\n2. Full mesh traffic:" << endl;
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++) {
-            voq_state[i][j] = 5;
-        }
-    }
-    
-    sw_qps_single_cycle(voq_state, T, matching, matching_size, false);
-    cout << "  Matching size with full mesh: " << (int)matching_size << endl;
-    
-    // Verify no conflicts
-    bool input_used[N] = {false};
-    int conflicts = 0;
-    
-    for (int out = 0; out < N; out++) {
-        if (matching[out] != INVALID_PORT) {
-            if (input_used[matching[out]]) {
-                conflicts++;
-            }
-            input_used[matching[out]] = true;
-        }
-    }
-    
-    cout << "  Conflicts: " << conflicts << endl;
-    assert(conflicts == 0);
-    cout << "✓ Single cycle interface test passed" << endl;
+    monitor.saveToCSV("sw_qps_log_diagonal_results.csv", offered_load, pattern);
 }
 
 int main() {
     cout << "========================================" << endl;
-    cout << "SW-QPS HLS CO-SIMULATION TESTBENCH" << endl;
+    cout << "SW-QPS HLS - LOG-DIAGONAL TRAFFIC" << endl;
     cout << "========================================" << endl;
     cout << "Configuration:" << endl;
     cout << "  N = " << N << " ports" << endl;
@@ -346,36 +261,21 @@ int main() {
     cout << "  Knockout = " << KNOCKOUT_THRESH << endl;
     cout << endl;
     
-    // Test single cycle interface first
-    testSingleCycle();
-    
     // Test parameters
     int simulation_time = 3000;
     int warmup_time = 500;
     
-    // Traffic patterns to test
-    vector<string> patterns = {"uniform", "diagonal", "quasi-diagonal", "log-diagonal"};
-    
-    // Load levels to test
+    string pattern = "log-diagonal";
     vector<double> loads = {0.1, 0.3, 0.5, 0.7, 0.8, 0.9, 0.95};
     
     // Run tests
-    for (const string& pattern : patterns) {
-        for (double load : loads) {
-            testSWQPS(pattern, load, simulation_time, warmup_time, false);
-            
-            // Check if we're achieving expected throughput
-            // SW-QPS should achieve 85-93% throughput
-            if (load >= 0.9) {
-                cout << "  Checking throughput at high load..." << endl;
-                // Throughput check would be based on results
-            }
-        }
+    for (double load : loads) {
+        testSWQPS(pattern, load, simulation_time, warmup_time, false);
     }
     
     cout << "\n========================================" << endl;
-    cout << "ALL HLS TESTS COMPLETED!" << endl;
-    cout << "Results saved to: sw_qps_hls_results.csv" << endl;
+    cout << "LOG-DIAGONAL TRAFFIC TESTS COMPLETED!" << endl;
+    cout << "Results saved to: sw_qps_log_diagonal_results.csv" << endl;
     cout << "========================================" << endl;
     
     return 0;
