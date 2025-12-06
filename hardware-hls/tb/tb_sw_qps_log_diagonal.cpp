@@ -262,8 +262,9 @@ int main() {
     cout << endl;
     
     // Test parameters
-    int simulation_time = 3000;
-    int warmup_time = 500;
+    // Test parameters
+    int simulation_time = 500;
+    int warmup_time = 50;
     
     string pattern = "log-diagonal";
     vector<double> loads = {0.1, 0.3, 0.5, 0.7, 0.8, 0.9, 0.95};

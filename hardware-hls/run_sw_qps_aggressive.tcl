@@ -9,26 +9,26 @@
 #   4. Export IP (optional)
 
 # Open project
-open_project -reset sw_qps_project_base
+open_project -reset sw_qps_project_aggressive
 
 # Set top function
 set_top sw_qps_top
 
 # Add source files
-add_files src/sw_qps_top.cpp
-add_files src/sliding_window.h
-add_files src/input_port.h
-add_files src/output_port.h
-add_files src/qps_sampler.cpp
-add_files src/utils.h
-add_files src/sw_qps_types.h
+add_files src_aggressive/sw_qps_top.cpp
+add_files src_aggressive/sliding_window.h
+add_files src_aggressive/input_port.h
+add_files src_aggressive/output_port.h
+add_files src_aggressive/qps_sampler.cpp
+add_files src_aggressive/utils.h
+add_files src_aggressive/sw_qps_types.h
 
 # Add testbench files
 add_files -tb tb/tb_sw_qps_hls.cpp
 add_files -tb tb/tb_sw_qps_pure.cpp -cflags "-std=c++11 -DSW_QPS_PURE_DISABLE_MAIN"
 
 # Open solution
-open_solution "solution-base"
+open_solution "solution-aggressive"
 
 # Target FPGA - Xilinx Zynq UltraScale+ (can adjust based on board)
 set_part xczu9eg-ffvb1156-2-e
@@ -57,17 +57,17 @@ csim_design -clean
 # ============================================================================
 # Step 2: Synthesis
 # ============================================================================
-# puts "========================================="
-# puts "Step 2: Running Synthesis..."
-# puts "========================================="
+puts "========================================="
+puts "Step 2: Running Synthesis..."
+puts "========================================="
 
-# # Synthesis directives for optimization
-# config_compile -name_max_length 100
-# config_schedule
-# config_bind
+# Synthesis directives for optimization
+config_compile -name_max_length 100
+config_schedule
+config_bind
 
-# # Run synthesis
-# csynth_design
+# Run synthesis
+csynth_design
 
 # ============================================================================
 # Step 3: Co-Simulation (Optional - can be slow)
@@ -95,7 +95,7 @@ csim_design -clean
 # # export_design -format ip_catalog -description "SW-QPS Switching Algorithm" -display_name "SW_QPS"
 
 # # Export for System Generator
-# export_design -flow impl
+# # export_design -format sysgen
 
 # # ============================================================================
 # # Step 5: Report Generation

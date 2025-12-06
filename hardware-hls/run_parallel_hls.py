@@ -29,6 +29,7 @@ from pathlib import Path
 
 # Configuration
 PATTERNS = ["uniform", "diagonal", "quasi_diagonal", "log_diagonal"]
+OPTIMIZATIONS = ["", "_aggressive"]  # Standard and aggressive optimization levels
 HLS_COMMAND = "vitis_hls"  # Adjust if needed (might be vivado_hls on older versions)
 WORKING_DIR = Path(__file__).parent.absolute()
 
@@ -39,21 +40,26 @@ class HLSRunner:
         self.processes = {}
         self.start_times = {}
         self.log_files = {}
+        self.configurations = []  # List of (pattern, optimization) tuples
         
-    def launch_pattern(self, pattern):
-        """Launch HLS flow for a specific pattern"""
+    def launch_pattern(self, pattern, optimization=""):
+        """Launch HLS flow for a specific pattern and optimization level"""
+        
+        # Create config identifier
+        config_name = f"{pattern}{optimization}"
         
         # Map pattern names to script names
-        script_name = f"run_sw_qps_{pattern}.tcl"
-        log_file = WORKING_DIR / f"hls_{pattern}.log"
+        script_name = f"run_sw_qps_{pattern}{optimization}.tcl"
+        log_file = WORKING_DIR / f"hls_{pattern}{optimization}.log"
         
-        print(f"[{self._timestamp()}] Launching {pattern} flow...")
+        opt_label = "AGGRESSIVE" if optimization else "STANDARD"
+        print(f"[{self._timestamp()}] Launching {pattern} ({opt_label}) flow...")
         print(f"  Script: {script_name}")
         print(f"  Log: {log_file}")
         
         # Open log file
         log_handle = open(log_file, 'w')
-        self.log_files[pattern] = log_handle
+        self.log_files[config_name] = log_handle
         
         # Launch process
         try:
@@ -65,8 +71,9 @@ class HLSRunner:
                 universal_newlines=True
             )
             
-            self.processes[pattern] = process
-            self.start_times[pattern] = time.time()
+            self.processes[config_name] = process
+            self.start_times[config_name] = time.time()
+            self.configurations.append((pattern, optimization))
             
             print(f"  ✓ Started (PID: {process.pid})")
             return True
@@ -87,21 +94,26 @@ class HLSRunner:
         print("SW-QPS HLS PARALLEL EXECUTION")
         print("=" * 70)
         print(f"Working directory: {WORKING_DIR}")
-        print(f"Launching {len(PATTERNS)} parallel HLS flows...")
+        
+        total_configs = len(PATTERNS) * len(OPTIMIZATIONS)
+        print(f"Launching {total_configs} parallel HLS flows...")
+        print(f"  Patterns: {', '.join(PATTERNS)}")
+        print(f"  Optimizations: Standard, Aggressive")
         print()
         
         success_count = 0
-        for pattern in PATTERNS:
-            if self.launch_pattern(pattern):
-                success_count += 1
-            time.sleep(1)  # Stagger launches slightly
+        for optimization in OPTIMIZATIONS:
+            for pattern in PATTERNS:
+                if self.launch_pattern(pattern, optimization):
+                    success_count += 1
+                time.sleep(0.5)  # Stagger launches slightly
         
         print()
         if success_count == 0:
             print("✗ Failed to launch any processes!")
             return False
-        elif success_count < len(PATTERNS):
-            print(f"⚠ Warning: Only {success_count}/{len(PATTERNS)} processes launched")
+        elif success_count < total_configs:
+            print(f"⚠ Warning: Only {success_count}/{total_configs} processes launched")
         else:
             print(f"✓ All {success_count} processes launched successfully")
         
@@ -170,11 +182,13 @@ class HLSRunner:
         
         # List all log files
         print("\nLog files:")
-        for pattern in PATTERNS:
-            log_file = WORKING_DIR / f"hls_{pattern}.log"
-            if log_file.exists():
-                size = log_file.stat().st_size / 1024  # KB
-                print(f"  - {log_file.name:30s} ({size:8.1f} KB)")
+        for optimization in OPTIMIZATIONS:
+            for pattern in PATTERNS:
+                config_name = f"{pattern}{optimization}"
+                log_file = WORKING_DIR / f"hls_{config_name}.log"
+                if log_file.exists():
+                    size = log_file.stat().st_size / 1024  # KB
+                    print(f"  - {log_file.name:40s} ({size:8.1f} KB)")
         
         # List results CSV files
         print("\nResults files:")
@@ -187,12 +201,14 @@ class HLSRunner:
         
         # List project directories
         print("\nProject directories:")
-        for pattern in PATTERNS:
-            proj_dir = WORKING_DIR / f"sw_qps_project_{pattern}"
-            if proj_dir.exists():
-                print(f"  ✓ {proj_dir.name}/")
-            else:
-                print(f"  ✗ {proj_dir.name}/ (not found)")
+        for optimization in OPTIMIZATIONS:
+            opt_suffix = "_aggressive" if optimization else ""
+            for pattern in PATTERNS:
+                proj_dir = WORKING_DIR / f"sw_qps_project_{pattern}{opt_suffix}"
+                if proj_dir.exists():
+                    print(f"  ✓ {proj_dir.name}/")
+                else:
+                    print(f"  ✗ {proj_dir.name}/ (not found)")
         
         print("\n" + "=" * 70)
         print("DONE")
@@ -241,13 +257,15 @@ def check_environment():
     # Check for required TCL scripts
     print("\nChecking TCL scripts...")
     all_found = True
-    for pattern in PATTERNS:
-        script = WORKING_DIR / f"run_sw_qps_{pattern}.tcl"
-        if script.exists():
-            print(f"✓ {script.name}")
-        else:
-            print(f"✗ {script.name} not found!")
-            all_found = False
+    for optimization in OPTIMIZATIONS:
+        for pattern in PATTERNS:
+            config_name = f"{pattern}{optimization}"
+            script = WORKING_DIR / f"run_sw_qps_{config_name}.tcl"
+            if script.exists():
+                print(f"✓ {script.name}")
+            else:
+                print(f"✗ {script.name} not found!")
+                all_found = False
     
     if not all_found:
         return False

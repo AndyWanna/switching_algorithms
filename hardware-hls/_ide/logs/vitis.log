@@ -1,0 +1,9 @@
+00:25:07 INFO  : updated workspace path: /usr/scratch/awanna3/ssched_simulator/hardware-hls
+00:25:07 INFO  : created .gitignore file for the project /usr/scratch/awanna3/ssched_simulator/hardware-hls
+00:25:07 INFO  : bash, -c, empyro repo -st   /tools/software/xilinx/2025.1/Vitis/data/embeddedsw
+00:25:07 INFO  : created .gitignore file for the project /usr/scratch/awanna3/ssched_simulator/hardware-hls/hls_component
+00:25:09 INFO  : [INFO]: Initializing repositories
+00:25:09 INFO  : [INFO]: Successfully set the EmbeddedSW path, refer .repo.yaml for more details.
+00:25:09 INFO  : Successfully created repository data at /usr/scratch/awanna3/ssched_simulator/hardware-hls/_ide/.wsdata
+00:25:09 INFO  : bash, -c, empyro get_template_data -d /tmp/rigel_lopper_awanna39468281587393119104 -r /usr/scratch/awanna3/ssched_simulator/hardware-hls/_ide/.wsdata/.repo.yaml
+00:25:10 INFO  : Embedded Template List generated successfully

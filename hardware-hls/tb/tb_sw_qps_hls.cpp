@@ -350,8 +350,9 @@ int main() {
     testSingleCycle();
     
     // Test parameters
-    int simulation_time = 3000;
-    int warmup_time = 500;
+    // Test parameters
+    int simulation_time = 10000;
+    int warmup_time = 1000;
     
     // Traffic patterns to test
     vector<string> patterns = {"uniform", "diagonal", "quasi-diagonal", "log-diagonal"};

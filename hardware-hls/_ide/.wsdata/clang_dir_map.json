@@ -1,0 +1,9 @@
+{
+  "workspaceRoot": "/usr/scratch/awanna3/ssched_simulator/hardware-hls",
+  "mapping": {
+    "hls_component/../src/sw_qps_top.cpp": "hls_component",
+    "hls_component/../tb/tb_sw_qps_hls.cpp": "hls_component",
+    "hls_component/../src/qps_sampler.cpp": "hls_component",
+    "hls_component/../tb/tb_sw_qps_pure.cpp": "hls_component"
+  }
+}
