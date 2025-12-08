@@ -33,14 +33,16 @@ private:
     InputPort input_ports[N];
     OutputPort output_ports[N];
     int current_time_slot;
-    
+    slot_id_t current_frame_slot;  // Which slot in the frame (0 to T-1)
+
     // Statistics
     long total_matched_pairs;
     long total_iterations;
-    
+
 public:
-    SlidingWindowManager() : current_time_slot(0), 
-                             total_matched_pairs(0), 
+    SlidingWindowManager() : current_time_slot(0),
+                             current_frame_slot(0),
+                             total_matched_pairs(0),
                              total_iterations(0) {}
     
     /*
@@ -48,17 +50,18 @@ public:
      */
     void initialize(random_t seed = 12345) {
         #pragma HLS INLINE off
-        
+
         current_time_slot = 0;
+        current_frame_slot = 0;
         total_matched_pairs = 0;
         total_iterations = 0;
-        
+
         // Initialize input ports with different seeds
         for (int i = 0; i < N; i++) {
             #pragma HLS UNROLL factor=4
             input_ports[i].initialize(i, seed + i * 1000);
         }
-        
+
         // Initialize output ports
         for (int i = 0; i < N; i++) {
             #pragma HLS UNROLL factor=4
@@ -117,27 +120,27 @@ public:
                 proposals_per_output[i],
                 num_proposals_per_output[i],
                 accepts,
-                num_accepts
+                num_accepts,
+                current_frame_slot  // Pass current slot for backfilling logic
             );
             
             // Route accepts back to input ports
             for (int j = 0; j < num_accepts; j++) {
                 #pragma HLS LOOP_TRIPCOUNT min=0 max=1
-                if (accepts[j].valid) {
-                    // Find which input this accept is for from the proposals
-                    for (int k = 0; k < num_proposals_per_output[i]; k++) {
-                        if (proposals_per_output[i][k].valid) {
-                            port_id_t input_id = proposals_per_output[i][k].input_id;
-                            if (input_id < N) {
-                                input_ports[input_id].processAccept(accepts[j]);
-                            }
-                        }
-                    }
+                if (accepts[j].valid && accepts[j].input_id < N) {
+                    // Send accept only to the specific input port that was accepted
+                    input_ports[accepts[j].input_id].processAccept(accepts[j]);
                 }
             }
         }
-        
+
         total_iterations++;
+
+        // Increment frame slot (wraps around at T)
+        current_frame_slot++;
+        if (current_frame_slot >= T) {
+            current_frame_slot = 0;
+        }
     }
     
     /*

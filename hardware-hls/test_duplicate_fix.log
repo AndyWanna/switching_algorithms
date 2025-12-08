@@ -1,0 +1,745 @@
+
+****** Vitis HLS - High-Level Synthesis from C, C++ and OpenCL v2024.1.2 (64-bit)
+  **** SW Build 5096458 on Sep  5 2024
+  **** IP Build 5164407 on Fri Sep  6 08:18:11 MDT 2024
+  **** SharedData Build 5164864 on Thu Sep 05 13:09:09 MDT 2024
+  **** Start of session at: Sat Dec  6 18:09:34 2025
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source /tools/software/xilinx/ARCHIVE/Vitis_HLS/2024.1/scripts/vitis_hls/hls.tcl -notrace
+INFO: [HLS 200-10] For user 'awanna3' on host 'chao-srv2.ece.gatech.edu' (Linux_x86_64 version 5.14.0-611.5.1.el9_7.x86_64) on Sat Dec 06 18:09:36 EST 2025
+INFO: [HLS 200-10] In directory '/usr/scratch/awanna3/ssched_simulator/hardware-hls'
+WARNING: [HLS 200-2053] The vitis_hls executable is deprecated. Consider using vitis-run --mode hls --tcl
+Sourcing Tcl script './run_sw_qps.tcl'
+INFO: [HLS 200-1510] Running: open_project -reset sw_qps_project_base 
+INFO: [HLS 200-10] Opening and resetting project '/usr/scratch/awanna3/ssched_simulator/hardware-hls/sw_qps_project_base'.
+INFO: [HLS 200-1510] Running: set_top sw_qps_top 
+INFO: [HLS 200-1510] Running: add_files src/sw_qps_top.cpp 
+INFO: [HLS 200-10] Adding design file 'src/sw_qps_top.cpp' to the project
+INFO: [HLS 200-1510] Running: add_files src/sliding_window.h 
+INFO: [HLS 200-10] Adding design file 'src/sliding_window.h' to the project
+INFO: [HLS 200-1510] Running: add_files src/input_port.h 
+INFO: [HLS 200-10] Adding design file 'src/input_port.h' to the project
+INFO: [HLS 200-1510] Running: add_files src/output_port.h 
+INFO: [HLS 200-10] Adding design file 'src/output_port.h' to the project
+INFO: [HLS 200-1510] Running: add_files src/qps_sampler.cpp 
+INFO: [HLS 200-10] Adding design file 'src/qps_sampler.cpp' to the project
+INFO: [HLS 200-1510] Running: add_files src/utils.h 
+INFO: [HLS 200-10] Adding design file 'src/utils.h' to the project
+INFO: [HLS 200-1510] Running: add_files src/sw_qps_types.h 
+INFO: [HLS 200-10] Adding design file 'src/sw_qps_types.h' to the project
+INFO: [HLS 200-1510] Running: add_files -tb tb/tb_sw_qps_hls.cpp 
+INFO: [HLS 200-10] Adding test bench file 'tb/tb_sw_qps_hls.cpp' to the project
+INFO: [HLS 200-1510] Running: add_files -tb tb/tb_sw_qps_pure.cpp -cflags -std=c++11 -DSW_QPS_PURE_DISABLE_MAIN 
+INFO: [HLS 200-10] Adding test bench file 'tb/tb_sw_qps_pure.cpp' to the project
+INFO: [HLS 200-1510] Running: open_solution solution-base 
+INFO: [HLS 200-10] Creating and opening solution '/usr/scratch/awanna3/ssched_simulator/hardware-hls/sw_qps_project_base/solution-base'.
+INFO: [HLS 200-1505] Using default flow_target 'vivado'
+Resolution: For help on HLS 200-1505 see docs.xilinx.com/access/sources/dita/topic?Doc_Version=2024.1%20English&url=ug1448-hls-guidance&resourceid=200-1505.html
+INFO: [HLS 200-1510] Running: set_part xczu9eg-ffvb1156-2-e 
+INFO: [HLS 200-1611] Setting target device to 'xczu9eg-ffvb1156-2-e'
+INFO: [HLS 200-1510] Running: create_clock -period 5 -name default 
+INFO: [SYN 201-201] Setting up clock 'default' with a period of 5ns.
+=========================================
+Step 1: Running C Simulation...
+=========================================
+INFO: [HLS 200-1510] Running: csim_design -clean 
+INFO: [SIM 211-2] *************** CSIM start ***************
+INFO: [SIM 211-4] CSIM will launch CLANG as the compiler.
+INFO: [HLS 200-2036] Building debug C Simulation binaries
+   Compiling ../../../../tb/tb_sw_qps_pure.cpp in debug mode
+   Compiling ../../../../tb/tb_sw_qps_hls.cpp in debug mode
+   Compiling ../../../../src/qps_sampler.cpp in debug mode
+   Compiling ../../../../src/sw_qps_top.cpp in debug mode
+   Generating csim.exe
+========================================
+SW-QPS HLS CO-SIMULATION TESTBENCH
+========================================
+Configuration:
+  N = 64 ports
+  T = 16 window size
+  Knockout = 3
+
+
+=== Testing Single Cycle Interface ===
+
+1. Diagonal traffic:
+  Iterations: 1, Matching size: 0
+  Iterations: 2, Matching size: 0
+  Iterations: 4, Matching size: 0
+  Iterations: 8, Matching size: 0
+  Iterations: 16, Matching size: 0
+
+2. Full mesh traffic:
+  Matching size with full mesh: 0
+  Conflicts: 0
+✓ Single cycle interface test passed
+
+========================================
+Testing: uniform traffic, load = 0.1
+========================================
+
+=== Performance Summary ===
+Traffic Pattern: uniform
+Offered Load: 0.1
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 64492
+  Packets Departed: 64492
+  Throughput: 6.4492 packets/cycle
+  Normalized Throughput: 10.0769%
+
+Matching Metrics:
+  Average Matching Size: 6.4492
+  Matching Efficiency: 10.0769%
+
+Queue Metrics:
+  Max VOQ Length: 1
+  Avg VOQ Length: 8.05664e-05
+
+========================================
+Testing: uniform traffic, load = 0.3
+========================================
+
+=== Performance Summary ===
+Traffic Pattern: uniform
+Offered Load: 0.3
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 191965
+  Packets Departed: 191958
+  Throughput: 19.1958 packets/cycle
+  Normalized Throughput: 29.9934%
+
+Matching Metrics:
+  Average Matching Size: 19.1958
+  Matching Efficiency: 29.9934%
+
+Queue Metrics:
+  Max VOQ Length: 1
+  Avg VOQ Length: 0.0015332
+
+========================================
+Testing: uniform traffic, load = 0.5
+========================================
+
+=== Performance Summary ===
+Traffic Pattern: uniform
+Offered Load: 0.5
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 319583
+  Packets Departed: 319568
+  Throughput: 31.9568 packets/cycle
+  Normalized Throughput: 49.9325%
+
+Matching Metrics:
+  Average Matching Size: 31.9568
+  Matching Efficiency: 49.9325%
+
+Queue Metrics:
+  Max VOQ Length: 3
+  Avg VOQ Length: 0.020127
+
+========================================
+Testing: uniform traffic, load = 0.7
+========================================
+
+=== Performance Summary ===
+Traffic Pattern: uniform
+Offered Load: 0.7
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 447362
+  Packets Departed: 407074
+  Throughput: 40.7074 packets/cycle
+  Normalized Throughput: 63.6053%
+
+Matching Metrics:
+  Average Matching Size: 40.7074
+  Matching Efficiency: 63.6053%
+
+Queue Metrics:
+  Max VOQ Length: 21
+  Avg VOQ Length: 0.126042
+
+========================================
+Testing: uniform traffic, load = 0.8
+========================================
+
+=== Performance Summary ===
+Traffic Pattern: uniform
+Offered Load: 0.8
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 511906
+  Packets Departed: 364949
+  Throughput: 36.4949 packets/cycle
+  Normalized Throughput: 57.0233%
+
+Matching Metrics:
+  Average Matching Size: 36.4949
+  Matching Efficiency: 57.0233%
+
+Queue Metrics:
+  Max VOQ Length: 97
+  Avg VOQ Length: 0.134312
+
+========================================
+Testing: uniform traffic, load = 0.9
+========================================
+
+=== Performance Summary ===
+Traffic Pattern: uniform
+Offered Load: 0.9
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 575905
+  Packets Departed: 311896
+  Throughput: 31.1896 packets/cycle
+  Normalized Throughput: 48.7338%
+
+Matching Metrics:
+  Average Matching Size: 31.1896
+  Matching Efficiency: 48.7338%
+
+Queue Metrics:
+  Max VOQ Length: 148
+  Avg VOQ Length: 0.126687
+  Checking throughput at high load...
+
+========================================
+Testing: uniform traffic, load = 0.95
+========================================
+
+=== Performance Summary ===
+Traffic Pattern: uniform
+Offered Load: 0.95
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 608164
+  Packets Departed: 288130
+  Throughput: 28.813 packets/cycle
+  Normalized Throughput: 45.0203%
+
+Matching Metrics:
+  Average Matching Size: 28.813
+  Matching Efficiency: 45.0203%
+
+Queue Metrics:
+  Max VOQ Length: 167
+  Avg VOQ Length: 0.124338
+  Checking throughput at high load...
+
+========================================
+Testing: diagonal traffic, load = 0.1
+========================================
+
+=== Performance Summary ===
+Traffic Pattern: diagonal
+Offered Load: 0.1
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 64222
+  Packets Departed: 64222
+  Throughput: 6.4222 packets/cycle
+  Normalized Throughput: 10.0347%
+
+Matching Metrics:
+  Average Matching Size: 6.4222
+  Matching Efficiency: 10.0347%
+
+Queue Metrics:
+  Max VOQ Length: 1
+  Avg VOQ Length: 3.17383e-05
+
+========================================
+Testing: diagonal traffic, load = 0.3
+========================================
+
+=== Performance Summary ===
+Traffic Pattern: diagonal
+Offered Load: 0.3
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 192045
+  Packets Departed: 192045
+  Throughput: 19.2045 packets/cycle
+  Normalized Throughput: 30.007%
+
+Matching Metrics:
+  Average Matching Size: 19.2045
+  Matching Efficiency: 30.007%
+
+Queue Metrics:
+  Max VOQ Length: 2
+  Avg VOQ Length: 0.000461426
+
+========================================
+Testing: diagonal traffic, load = 0.5
+========================================
+
+=== Performance Summary ===
+Traffic Pattern: diagonal
+Offered Load: 0.5
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 319831
+  Packets Departed: 319840
+  Throughput: 31.984 packets/cycle
+  Normalized Throughput: 49.975%
+
+Matching Metrics:
+  Average Matching Size: 31.984
+  Matching Efficiency: 49.975%
+
+Queue Metrics:
+  Max VOQ Length: 3
+  Avg VOQ Length: 0.0025
+
+========================================
+Testing: diagonal traffic, load = 0.7
+========================================
+
+=== Performance Summary ===
+Traffic Pattern: diagonal
+Offered Load: 0.7
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 447583
+  Packets Departed: 447598
+  Throughput: 44.7598 packets/cycle
+  Normalized Throughput: 69.9372%
+
+Matching Metrics:
+  Average Matching Size: 44.7598
+  Matching Efficiency: 69.9372%
+
+Queue Metrics:
+  Max VOQ Length: 7
+  Avg VOQ Length: 0.0195166
+
+========================================
+Testing: diagonal traffic, load = 0.8
+========================================
+
+=== Performance Summary ===
+Traffic Pattern: diagonal
+Offered Load: 0.8
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 512043
+  Packets Departed: 480590
+  Throughput: 48.059 packets/cycle
+  Normalized Throughput: 75.0922%
+
+Matching Metrics:
+  Average Matching Size: 48.059
+  Matching Efficiency: 75.0922%
+
+Queue Metrics:
+  Max VOQ Length: 327
+  Avg VOQ Length: 0.126758
+
+========================================
+Testing: diagonal traffic, load = 0.9
+========================================
+
+=== Performance Summary ===
+Traffic Pattern: diagonal
+Offered Load: 0.9
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 576157
+  Packets Departed: 493852
+  Throughput: 49.3852 packets/cycle
+  Normalized Throughput: 77.1644%
+
+Matching Metrics:
+  Average Matching Size: 49.3852
+  Matching Efficiency: 77.1644%
+
+Queue Metrics:
+  Max VOQ Length: 1023
+  Avg VOQ Length: 0.123264
+  Checking throughput at high load...
+
+========================================
+Testing: diagonal traffic, load = 0.95
+========================================
+
+=== Performance Summary ===
+Traffic Pattern: diagonal
+Offered Load: 0.95
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 608148
+  Packets Departed: 499037
+  Throughput: 49.9037 packets/cycle
+  Normalized Throughput: 77.9745%
+
+Matching Metrics:
+  Average Matching Size: 49.9037
+  Matching Efficiency: 77.9745%
+
+Queue Metrics:
+  Max VOQ Length: 1023
+  Avg VOQ Length: 0.124495
+  Checking throughput at high load...
+
+========================================
+Testing: quasi-diagonal traffic, load = 0.1
+========================================
+
+=== Performance Summary ===
+Traffic Pattern: quasi-diagonal
+Offered Load: 0.1
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 64310
+  Packets Departed: 64311
+  Throughput: 6.4311 packets/cycle
+  Normalized Throughput: 10.0486%
+
+Matching Metrics:
+  Average Matching Size: 6.4311
+  Matching Efficiency: 10.0486%
+
+Queue Metrics:
+  Max VOQ Length: 1
+  Avg VOQ Length: 9.0332e-05
+
+========================================
+Testing: quasi-diagonal traffic, load = 0.3
+========================================
+
+=== Performance Summary ===
+Traffic Pattern: quasi-diagonal
+Offered Load: 0.3
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 192103
+  Packets Departed: 192097
+  Throughput: 19.2097 packets/cycle
+  Normalized Throughput: 30.0152%
+
+Matching Metrics:
+  Average Matching Size: 19.2097
+  Matching Efficiency: 30.0152%
+
+Queue Metrics:
+  Max VOQ Length: 2
+  Avg VOQ Length: 0.00109375
+
+========================================
+Testing: quasi-diagonal traffic, load = 0.5
+========================================
+
+=== Performance Summary ===
+Traffic Pattern: quasi-diagonal
+Offered Load: 0.5
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 320116
+  Packets Departed: 320111
+  Throughput: 32.0111 packets/cycle
+  Normalized Throughput: 50.0173%
+
+Matching Metrics:
+  Average Matching Size: 32.0111
+  Matching Efficiency: 50.0173%
+
+Queue Metrics:
+  Max VOQ Length: 6
+  Avg VOQ Length: 0.00901367
+
+========================================
+Testing: quasi-diagonal traffic, load = 0.7
+========================================
+
+=== Performance Summary ===
+Traffic Pattern: quasi-diagonal
+Offered Load: 0.7
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 447582
+  Packets Departed: 421804
+  Throughput: 42.1804 packets/cycle
+  Normalized Throughput: 65.9069%
+
+Matching Metrics:
+  Average Matching Size: 42.1804
+  Matching Efficiency: 65.9069%
+
+Queue Metrics:
+  Max VOQ Length: 198
+  Avg VOQ Length: 0.125544
+
+========================================
+Testing: quasi-diagonal traffic, load = 0.8
+========================================
+
+=== Performance Summary ===
+Traffic Pattern: quasi-diagonal
+Offered Load: 0.8
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 511653
+  Packets Departed: 410761
+  Throughput: 41.0761 packets/cycle
+  Normalized Throughput: 64.1814%
+
+Matching Metrics:
+  Average Matching Size: 41.0761
+  Matching Efficiency: 64.1814%
+
+Queue Metrics:
+  Max VOQ Length: 1023
+  Avg VOQ Length: 0.124692
+
+========================================
+Testing: quasi-diagonal traffic, load = 0.9
+========================================
+
+=== Performance Summary ===
+Traffic Pattern: quasi-diagonal
+Offered Load: 0.9
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 575869
+  Packets Departed: 376668
+  Throughput: 37.6668 packets/cycle
+  Normalized Throughput: 58.8544%
+
+Matching Metrics:
+  Average Matching Size: 37.6668
+  Matching Efficiency: 58.8544%
+
+Queue Metrics:
+  Max VOQ Length: 1022
+  Avg VOQ Length: 0.115432
+  Checking throughput at high load...
+
+========================================
+Testing: quasi-diagonal traffic, load = 0.95
+========================================
+
+=== Performance Summary ===
+Traffic Pattern: quasi-diagonal
+Offered Load: 0.95
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 607911
+  Packets Departed: 356593
+  Throughput: 35.6593 packets/cycle
+  Normalized Throughput: 55.7177%
+
+Matching Metrics:
+  Average Matching Size: 35.6593
+  Matching Efficiency: 55.7177%
+
+Queue Metrics:
+  Max VOQ Length: 1023
+  Avg VOQ Length: 0.13147
+  Checking throughput at high load...
+
+========================================
+Testing: log-diagonal traffic, load = 0.1
+========================================
+
+=== Performance Summary ===
+Traffic Pattern: log-diagonal
+Offered Load: 0.1
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 64349
+  Packets Departed: 64349
+  Throughput: 6.4349 packets/cycle
+  Normalized Throughput: 10.0545%
+
+Matching Metrics:
+  Average Matching Size: 6.4349
+  Matching Efficiency: 10.0545%
+
+Queue Metrics:
+  Max VOQ Length: 1
+  Avg VOQ Length: 5.61523e-05
+
+========================================
+Testing: log-diagonal traffic, load = 0.3
+========================================
+
+=== Performance Summary ===
+Traffic Pattern: log-diagonal
+Offered Load: 0.3
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 192604
+  Packets Departed: 192605
+  Throughput: 19.2605 packets/cycle
+  Normalized Throughput: 30.0945%
+
+Matching Metrics:
+  Average Matching Size: 19.2605
+  Matching Efficiency: 30.0945%
+
+Queue Metrics:
+  Max VOQ Length: 2
+  Avg VOQ Length: 0.000793457
+
+========================================
+Testing: log-diagonal traffic, load = 0.5
+========================================
+
+=== Performance Summary ===
+Traffic Pattern: log-diagonal
+Offered Load: 0.5
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 319763
+  Packets Departed: 319763
+  Throughput: 31.9763 packets/cycle
+  Normalized Throughput: 49.963%
+
+Matching Metrics:
+  Average Matching Size: 31.9763
+  Matching Efficiency: 49.963%
+
+Queue Metrics:
+  Max VOQ Length: 4
+  Avg VOQ Length: 0.0054834
+
+========================================
+Testing: log-diagonal traffic, load = 0.7
+========================================
+
+=== Performance Summary ===
+Traffic Pattern: log-diagonal
+Offered Load: 0.7
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 447643
+  Packets Departed: 434740
+  Throughput: 43.474 packets/cycle
+  Normalized Throughput: 67.9281%
+
+Matching Metrics:
+  Average Matching Size: 43.474
+  Matching Efficiency: 67.9281%
+
+Queue Metrics:
+  Max VOQ Length: 129
+  Avg VOQ Length: 0.129468
+
+========================================
+Testing: log-diagonal traffic, load = 0.8
+========================================
+
+=== Performance Summary ===
+Traffic Pattern: log-diagonal
+Offered Load: 0.8
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 512350
+  Packets Departed: 436760
+  Throughput: 43.676 packets/cycle
+  Normalized Throughput: 68.2438%
+
+Matching Metrics:
+  Average Matching Size: 43.676
+  Matching Efficiency: 68.2438%
+
+Queue Metrics:
+  Max VOQ Length: 833
+  Avg VOQ Length: 0.121968
+
+========================================
+Testing: log-diagonal traffic, load = 0.9
+========================================
+
+=== Performance Summary ===
+Traffic Pattern: log-diagonal
+Offered Load: 0.9
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 575857
+  Packets Departed: 441607
+  Throughput: 44.1607 packets/cycle
+  Normalized Throughput: 69.0011%
+
+Matching Metrics:
+  Average Matching Size: 44.1607
+  Matching Efficiency: 69.0011%
+
+Queue Metrics:
+  Max VOQ Length: 1023
+  Avg VOQ Length: 0.122864
+  Checking throughput at high load...
+
+========================================
+Testing: log-diagonal traffic, load = 0.95
+========================================
+
+=== Performance Summary ===
+Traffic Pattern: log-diagonal
+Offered Load: 0.95
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 607967
+  Packets Departed: 444758
+  Throughput: 44.4758 packets/cycle
+  Normalized Throughput: 69.4934%
+
+Matching Metrics:
+  Average Matching Size: 44.4758
+  Matching Efficiency: 69.4934%
+
+Queue Metrics:
+  Max VOQ Length: 1023
+  Avg VOQ Length: 0.118994
+  Checking throughput at high load...
+
+========================================
+ALL HLS TESTS COMPLETED!
+Results saved to: sw_qps_hls_results.csv
+========================================
+ERROR: [SIM 211-100] CSim failed with errors.
+INFO: [SIM 211-3] *************** CSIM finish ***************
+INFO: [HLS 200-2161] Finished Command csim_design Elapsed time: 00:07:15; Allocated memory: 0.000 MB.
+4
+    while executing
+"source ./run_sw_qps.tcl"
+    ("uplevel" body line 1)
+    invoked from within
+"uplevel \#0 [list source $tclfile] "
+
+INFO: [HLS 200-112] Total CPU user time: 434.55 seconds. Total CPU system time: 1.05 seconds. Total elapsed time: 439.94 seconds; peak allocated memory: 0.000 MB.

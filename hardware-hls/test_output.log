@@ -1,0 +1,1354 @@
+
+****** Vitis HLS - High-Level Synthesis from C, C++ and OpenCL v2024.1.2 (64-bit)
+  **** SW Build 5096458 on Sep  5 2024
+  **** IP Build 5164407 on Fri Sep  6 08:18:11 MDT 2024
+  **** SharedData Build 5164864 on Thu Sep 05 13:09:09 MDT 2024
+  **** Start of session at: Sat Dec  6 17:17:29 2025
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source /tools/software/xilinx/ARCHIVE/Vitis_HLS/2024.1/scripts/vitis_hls/hls.tcl -notrace
+INFO: [HLS 200-10] For user 'awanna3' on host 'chao-srv2.ece.gatech.edu' (Linux_x86_64 version 5.14.0-611.5.1.el9_7.x86_64) on Sat Dec 06 17:17:31 EST 2025
+INFO: [HLS 200-10] In directory '/usr/scratch/awanna3/ssched_simulator/hardware-hls'
+WARNING: [HLS 200-2053] The vitis_hls executable is deprecated. Consider using vitis-run --mode hls --tcl
+Sourcing Tcl script './run_sw_qps.tcl'
+INFO: [HLS 200-1510] Running: open_project -reset sw_qps_project_base 
+INFO: [HLS 200-10] Opening and resetting project '/usr/scratch/awanna3/ssched_simulator/hardware-hls/sw_qps_project_base'.
+INFO: [HLS 200-1510] Running: set_top sw_qps_top 
+INFO: [HLS 200-1510] Running: add_files src/sw_qps_top.cpp 
+INFO: [HLS 200-10] Adding design file 'src/sw_qps_top.cpp' to the project
+INFO: [HLS 200-1510] Running: add_files src/sliding_window.h 
+INFO: [HLS 200-10] Adding design file 'src/sliding_window.h' to the project
+INFO: [HLS 200-1510] Running: add_files src/input_port.h 
+INFO: [HLS 200-10] Adding design file 'src/input_port.h' to the project
+INFO: [HLS 200-1510] Running: add_files src/output_port.h 
+INFO: [HLS 200-10] Adding design file 'src/output_port.h' to the project
+INFO: [HLS 200-1510] Running: add_files src/qps_sampler.cpp 
+INFO: [HLS 200-10] Adding design file 'src/qps_sampler.cpp' to the project
+INFO: [HLS 200-1510] Running: add_files src/utils.h 
+INFO: [HLS 200-10] Adding design file 'src/utils.h' to the project
+INFO: [HLS 200-1510] Running: add_files src/sw_qps_types.h 
+INFO: [HLS 200-10] Adding design file 'src/sw_qps_types.h' to the project
+INFO: [HLS 200-1510] Running: add_files -tb tb/tb_sw_qps_hls.cpp 
+INFO: [HLS 200-10] Adding test bench file 'tb/tb_sw_qps_hls.cpp' to the project
+INFO: [HLS 200-1510] Running: add_files -tb tb/tb_sw_qps_pure.cpp -cflags -std=c++11 -DSW_QPS_PURE_DISABLE_MAIN 
+INFO: [HLS 200-10] Adding test bench file 'tb/tb_sw_qps_pure.cpp' to the project
+INFO: [HLS 200-1510] Running: open_solution solution-base 
+INFO: [HLS 200-10] Creating and opening solution '/usr/scratch/awanna3/ssched_simulator/hardware-hls/sw_qps_project_base/solution-base'.
+INFO: [HLS 200-1505] Using default flow_target 'vivado'
+Resolution: For help on HLS 200-1505 see docs.xilinx.com/access/sources/dita/topic?Doc_Version=2024.1%20English&url=ug1448-hls-guidance&resourceid=200-1505.html
+INFO: [HLS 200-1510] Running: set_part xczu9eg-ffvb1156-2-e 
+INFO: [HLS 200-1611] Setting target device to 'xczu9eg-ffvb1156-2-e'
+INFO: [HLS 200-1510] Running: create_clock -period 5 -name default 
+INFO: [SYN 201-201] Setting up clock 'default' with a period of 5ns.
+=========================================
+Step 1: Running C Simulation...
+=========================================
+INFO: [HLS 200-1510] Running: csim_design -clean 
+INFO: [SIM 211-2] *************** CSIM start ***************
+INFO: [SIM 211-4] CSIM will launch CLANG as the compiler.
+INFO: [HLS 200-2036] Building debug C Simulation binaries
+   Compiling ../../../../tb/tb_sw_qps_pure.cpp in debug mode
+   Compiling ../../../../tb/tb_sw_qps_hls.cpp in debug mode
+   Compiling ../../../../src/qps_sampler.cpp in debug mode
+   Compiling ../../../../src/sw_qps_top.cpp in debug mode
+   Generating csim.exe
+========================================
+SW-QPS HLS CO-SIMULATION TESTBENCH
+========================================
+Configuration:
+  N = 64 ports
+  T = 16 window size
+  Knockout = 3
+
+
+=== Testing Single Cycle Interface ===
+
+1. Diagonal traffic:
+  Iterations: 1, Matching size: 0
+  Iterations: 2, Matching size: 0
+  Iterations: 4, Matching size: 0
+  Iterations: 8, Matching size: 0
+  Iterations: 16, Matching size: 0
+
+2. Full mesh traffic:
+  Matching size with full mesh: 0
+  Conflicts: 0
+✓ Single cycle interface test passed
+
+========================================
+Testing: uniform traffic, load = 0.1
+========================================
+
+  Warning: System unstable at cycle 0
+
+  Warning: System unstable at cycle 1000
+
+  Warning: System unstable at cycle 2000
+
+  Warning: System unstable at cycle 3000
+
+  Warning: System unstable at cycle 4000
+
+  Warning: System unstable at cycle 5000
+
+  Warning: System unstable at cycle 6000
+
+  Warning: System unstable at cycle 7000
+
+  Warning: System unstable at cycle 8000
+
+  Warning: System unstable at cycle 9000
+
+  Warning: System unstable at cycle 10000
+
+=== Performance Summary ===
+Traffic Pattern: uniform
+Offered Load: 0.1
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 64492
+  Packets Departed: 64492
+  Throughput: 6.4492 packets/cycle
+  Normalized Throughput: 100.769%
+
+Matching Metrics:
+  Average Matching Size: 6.4492
+  Matching Efficiency: 10.0769%
+
+Queue Metrics:
+  Max VOQ Length: 1
+  Avg VOQ Length: 8.30078e-05
+
+========================================
+Testing: uniform traffic, load = 0.3
+========================================
+
+  Warning: System unstable at cycle 0
+
+  Warning: System unstable at cycle 1000
+
+  Warning: System unstable at cycle 2000
+
+  Warning: System unstable at cycle 3000
+
+  Warning: System unstable at cycle 4000
+
+  Warning: System unstable at cycle 5000
+
+  Warning: System unstable at cycle 6000
+
+  Warning: System unstable at cycle 7000
+
+  Warning: System unstable at cycle 8000
+
+  Warning: System unstable at cycle 9000
+
+  Warning: System unstable at cycle 10000
+
+=== Performance Summary ===
+Traffic Pattern: uniform
+Offered Load: 0.3
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 191965
+  Packets Departed: 191958
+  Throughput: 19.1958 packets/cycle
+  Normalized Throughput: 99.9781%
+
+Matching Metrics:
+  Average Matching Size: 19.1958
+  Matching Efficiency: 29.9934%
+
+Queue Metrics:
+  Max VOQ Length: 2
+  Avg VOQ Length: 0.00157227
+
+========================================
+Testing: uniform traffic, load = 0.5
+========================================
+
+  Warning: System unstable at cycle 0
+
+  Warning: System unstable at cycle 1000
+
+  Warning: System unstable at cycle 2000
+
+  Warning: System unstable at cycle 3000
+
+  Warning: System unstable at cycle 4000
+
+  Warning: System unstable at cycle 5000
+
+  Warning: System unstable at cycle 6000
+
+  Warning: System unstable at cycle 7000
+
+  Warning: System unstable at cycle 8000
+
+  Warning: System unstable at cycle 9000
+
+  Warning: System unstable at cycle 10000
+
+=== Performance Summary ===
+Traffic Pattern: uniform
+Offered Load: 0.5
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 319583
+  Packets Departed: 319558
+  Throughput: 31.9558 packets/cycle
+  Normalized Throughput: 99.8619%
+
+Matching Metrics:
+  Average Matching Size: 31.9558
+  Matching Efficiency: 49.9309%
+
+Queue Metrics:
+  Max VOQ Length: 3
+  Avg VOQ Length: 0.0204468
+
+========================================
+Testing: uniform traffic, load = 0.7
+========================================
+
+  Warning: System unstable at cycle 0
+
+  Warning: System unstable at cycle 1000
+
+  Warning: System unstable at cycle 2000
+
+  Warning: System unstable at cycle 3000
+
+  Warning: System unstable at cycle 4000
+
+  Warning: System unstable at cycle 5000
+
+  Warning: System unstable at cycle 6000
+
+  Warning: System unstable at cycle 7000
+
+  Warning: System unstable at cycle 8000
+
+  Warning: System unstable at cycle 9000
+
+  Warning: System unstable at cycle 10000
+
+=== Performance Summary ===
+Traffic Pattern: uniform
+Offered Load: 0.7
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 447362
+  Packets Departed: 406660
+  Throughput: 40.666 packets/cycle
+  Normalized Throughput: 90.7723%
+
+Matching Metrics:
+  Average Matching Size: 40.666
+  Matching Efficiency: 63.5406%
+
+Queue Metrics:
+  Max VOQ Length: 22
+  Avg VOQ Length: 0.13292
+
+========================================
+Testing: uniform traffic, load = 0.8
+========================================
+
+  Warning: System unstable at cycle 0
+
+  Warning: System unstable at cycle 1000
+
+  Warning: System unstable at cycle 2000
+
+  Warning: System unstable at cycle 3000
+
+  Warning: System unstable at cycle 4000
+
+  Warning: System unstable at cycle 5000
+
+  Warning: System unstable at cycle 6000
+
+  Warning: System unstable at cycle 7000
+
+  Warning: System unstable at cycle 8000
+
+  Warning: System unstable at cycle 9000
+
+  Warning: System unstable at cycle 10000
+
+=== Performance Summary ===
+Traffic Pattern: uniform
+Offered Load: 0.8
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 511906
+  Packets Departed: 366028
+  Throughput: 36.6028 packets/cycle
+  Normalized Throughput: 71.4898%
+
+Matching Metrics:
+  Average Matching Size: 36.6028
+  Matching Efficiency: 57.1919%
+
+Queue Metrics:
+  Max VOQ Length: 98
+  Avg VOQ Length: 0.149868
+
+========================================
+Testing: uniform traffic, load = 0.9
+========================================
+
+  Warning: System unstable at cycle 0
+
+  Warning: System unstable at cycle 1000
+
+  Warning: System unstable at cycle 2000
+
+  Warning: System unstable at cycle 3000
+
+  Warning: System unstable at cycle 4000
+
+  Warning: System unstable at cycle 5000
+
+  Warning: System unstable at cycle 6000
+
+  Warning: System unstable at cycle 7000
+
+  Warning: System unstable at cycle 8000
+
+  Warning: System unstable at cycle 9000
+
+  Warning: System unstable at cycle 10000
+
+=== Performance Summary ===
+Traffic Pattern: uniform
+Offered Load: 0.9
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 575905
+  Packets Departed: 311776
+  Throughput: 31.1776 packets/cycle
+  Normalized Throughput: 54.1278%
+
+Matching Metrics:
+  Average Matching Size: 31.1776
+  Matching Efficiency: 48.715%
+
+Queue Metrics:
+  Max VOQ Length: 147
+  Avg VOQ Length: 0.115452
+  Checking throughput at high load...
+
+========================================
+Testing: uniform traffic, load = 0.95
+========================================
+
+  Warning: System unstable at cycle 0
+
+  Warning: System unstable at cycle 1000
+
+  Warning: System unstable at cycle 2000
+
+  Warning: System unstable at cycle 3000
+
+  Warning: System unstable at cycle 4000
+
+  Warning: System unstable at cycle 5000
+
+  Warning: System unstable at cycle 6000
+
+  Warning: System unstable at cycle 7000
+
+  Warning: System unstable at cycle 8000
+
+  Warning: System unstable at cycle 9000
+
+  Warning: System unstable at cycle 10000
+
+=== Performance Summary ===
+Traffic Pattern: uniform
+Offered Load: 0.95
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 608164
+  Packets Departed: 287578
+  Throughput: 28.7578 packets/cycle
+  Normalized Throughput: 47.299%
+
+Matching Metrics:
+  Average Matching Size: 28.7578
+  Matching Efficiency: 44.9341%
+
+Queue Metrics:
+  Max VOQ Length: 166
+  Avg VOQ Length: 0.115408
+  Checking throughput at high load...
+
+========================================
+Testing: diagonal traffic, load = 0.1
+========================================
+
+  Warning: System unstable at cycle 0
+
+  Warning: System unstable at cycle 1000
+
+  Warning: System unstable at cycle 2000
+
+  Warning: System unstable at cycle 3000
+
+  Warning: System unstable at cycle 4000
+
+  Warning: System unstable at cycle 5000
+
+  Warning: System unstable at cycle 6000
+
+  Warning: System unstable at cycle 7000
+
+  Warning: System unstable at cycle 8000
+
+  Warning: System unstable at cycle 9000
+
+  Warning: System unstable at cycle 10000
+
+=== Performance Summary ===
+Traffic Pattern: diagonal
+Offered Load: 0.1
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 64222
+  Packets Departed: 64222
+  Throughput: 6.4222 packets/cycle
+  Normalized Throughput: 100.347%
+
+Matching Metrics:
+  Average Matching Size: 6.4222
+  Matching Efficiency: 10.0347%
+
+Queue Metrics:
+  Max VOQ Length: 1
+  Avg VOQ Length: 3.17383e-05
+
+========================================
+Testing: diagonal traffic, load = 0.3
+========================================
+
+  Warning: System unstable at cycle 0
+
+  Warning: System unstable at cycle 1000
+
+  Warning: System unstable at cycle 2000
+
+  Warning: System unstable at cycle 3000
+
+  Warning: System unstable at cycle 4000
+
+  Warning: System unstable at cycle 5000
+
+  Warning: System unstable at cycle 6000
+
+  Warning: System unstable at cycle 7000
+
+  Warning: System unstable at cycle 8000
+
+  Warning: System unstable at cycle 9000
+
+  Warning: System unstable at cycle 10000
+
+=== Performance Summary ===
+Traffic Pattern: diagonal
+Offered Load: 0.3
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 192045
+  Packets Departed: 192045
+  Throughput: 19.2045 packets/cycle
+  Normalized Throughput: 100.023%
+
+Matching Metrics:
+  Average Matching Size: 19.2045
+  Matching Efficiency: 30.007%
+
+Queue Metrics:
+  Max VOQ Length: 1
+  Avg VOQ Length: 0.000446777
+
+========================================
+Testing: diagonal traffic, load = 0.5
+========================================
+
+  Warning: System unstable at cycle 0
+
+  Warning: System unstable at cycle 1000
+
+  Warning: System unstable at cycle 2000
+
+  Warning: System unstable at cycle 3000
+
+  Warning: System unstable at cycle 4000
+
+  Warning: System unstable at cycle 5000
+
+  Warning: System unstable at cycle 6000
+
+  Warning: System unstable at cycle 7000
+
+  Warning: System unstable at cycle 8000
+
+  Warning: System unstable at cycle 9000
+
+  Warning: System unstable at cycle 10000
+
+=== Performance Summary ===
+Traffic Pattern: diagonal
+Offered Load: 0.5
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 319831
+  Packets Departed: 319839
+  Throughput: 31.9839 packets/cycle
+  Normalized Throughput: 99.9497%
+
+Matching Metrics:
+  Average Matching Size: 31.9839
+  Matching Efficiency: 49.9748%
+
+Queue Metrics:
+  Max VOQ Length: 2
+  Avg VOQ Length: 0.00249023
+
+========================================
+Testing: diagonal traffic, load = 0.7
+========================================
+
+  Warning: System unstable at cycle 0
+
+  Warning: System unstable at cycle 1000
+
+  Warning: System unstable at cycle 2000
+
+  Warning: System unstable at cycle 3000
+
+  Warning: System unstable at cycle 4000
+
+  Warning: System unstable at cycle 5000
+
+  Warning: System unstable at cycle 6000
+
+  Warning: System unstable at cycle 7000
+
+  Warning: System unstable at cycle 8000
+
+  Warning: System unstable at cycle 9000
+
+  Warning: System unstable at cycle 10000
+
+=== Performance Summary ===
+Traffic Pattern: diagonal
+Offered Load: 0.7
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 447583
+  Packets Departed: 447592
+  Throughput: 44.7592 packets/cycle
+  Normalized Throughput: 99.9089%
+
+Matching Metrics:
+  Average Matching Size: 44.7592
+  Matching Efficiency: 69.9363%
+
+Queue Metrics:
+  Max VOQ Length: 7
+  Avg VOQ Length: 0.0192969
+
+========================================
+Testing: diagonal traffic, load = 0.8
+========================================
+
+  Warning: System unstable at cycle 0
+
+  Warning: System unstable at cycle 1000
+
+  Warning: System unstable at cycle 2000
+
+  Warning: System unstable at cycle 3000
+
+  Warning: System unstable at cycle 4000
+
+  Warning: System unstable at cycle 5000
+
+  Warning: System unstable at cycle 6000
+
+  Warning: System unstable at cycle 7000
+
+  Warning: System unstable at cycle 8000
+
+  Warning: System unstable at cycle 9000
+
+  Warning: System unstable at cycle 10000
+
+=== Performance Summary ===
+Traffic Pattern: diagonal
+Offered Load: 0.8
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 512043
+  Packets Departed: 480208
+  Throughput: 48.0208 packets/cycle
+  Normalized Throughput: 93.7906%
+
+Matching Metrics:
+  Average Matching Size: 48.0208
+  Matching Efficiency: 75.0325%
+
+Queue Metrics:
+  Max VOQ Length: 307
+  Avg VOQ Length: 0.128027
+
+========================================
+Testing: diagonal traffic, load = 0.9
+========================================
+
+  Warning: System unstable at cycle 0
+
+  Warning: System unstable at cycle 1000
+
+  Warning: System unstable at cycle 2000
+
+  Warning: System unstable at cycle 3000
+
+  Warning: System unstable at cycle 4000
+
+  Warning: System unstable at cycle 5000
+
+  Warning: System unstable at cycle 6000
+
+  Warning: System unstable at cycle 7000
+
+  Warning: System unstable at cycle 8000
+
+  Warning: System unstable at cycle 9000
+
+  Warning: System unstable at cycle 10000
+
+=== Performance Summary ===
+Traffic Pattern: diagonal
+Offered Load: 0.9
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 576157
+  Packets Departed: 493552
+  Throughput: 49.3552 packets/cycle
+  Normalized Throughput: 85.6861%
+
+Matching Metrics:
+  Average Matching Size: 49.3552
+  Matching Efficiency: 77.1175%
+
+Queue Metrics:
+  Max VOQ Length: 1023
+  Avg VOQ Length: 0.116379
+  Checking throughput at high load...
+
+========================================
+Testing: diagonal traffic, load = 0.95
+========================================
+
+  Warning: System unstable at cycle 0
+
+  Warning: System unstable at cycle 1000
+
+  Warning: System unstable at cycle 2000
+
+  Warning: System unstable at cycle 3000
+
+  Warning: System unstable at cycle 4000
+
+  Warning: System unstable at cycle 5000
+
+  Warning: System unstable at cycle 6000
+
+  Warning: System unstable at cycle 7000
+
+  Warning: System unstable at cycle 8000
+
+  Warning: System unstable at cycle 9000
+
+  Warning: System unstable at cycle 10000
+
+=== Performance Summary ===
+Traffic Pattern: diagonal
+Offered Load: 0.95
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 608148
+  Packets Departed: 498863
+  Throughput: 49.8863 packets/cycle
+  Normalized Throughput: 82.0498%
+
+Matching Metrics:
+  Average Matching Size: 49.8863
+  Matching Efficiency: 77.9473%
+
+Queue Metrics:
+  Max VOQ Length: 1023
+  Avg VOQ Length: 0.131472
+  Checking throughput at high load...
+
+========================================
+Testing: quasi-diagonal traffic, load = 0.1
+========================================
+
+  Warning: System unstable at cycle 0
+
+  Warning: System unstable at cycle 1000
+
+  Warning: System unstable at cycle 2000
+
+  Warning: System unstable at cycle 3000
+
+  Warning: System unstable at cycle 4000
+
+  Warning: System unstable at cycle 5000
+
+  Warning: System unstable at cycle 6000
+
+  Warning: System unstable at cycle 7000
+
+  Warning: System unstable at cycle 8000
+
+  Warning: System unstable at cycle 9000
+
+  Warning: System unstable at cycle 10000
+
+=== Performance Summary ===
+Traffic Pattern: quasi-diagonal
+Offered Load: 0.1
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 64310
+  Packets Departed: 64311
+  Throughput: 6.4311 packets/cycle
+  Normalized Throughput: 100.486%
+
+Matching Metrics:
+  Average Matching Size: 6.4311
+  Matching Efficiency: 10.0486%
+
+Queue Metrics:
+  Max VOQ Length: 1
+  Avg VOQ Length: 9.0332e-05
+
+========================================
+Testing: quasi-diagonal traffic, load = 0.3
+========================================
+
+  Warning: System unstable at cycle 0
+
+  Warning: System unstable at cycle 1000
+
+  Warning: System unstable at cycle 2000
+
+  Warning: System unstable at cycle 3000
+
+  Warning: System unstable at cycle 4000
+
+  Warning: System unstable at cycle 5000
+
+  Warning: System unstable at cycle 6000
+
+  Warning: System unstable at cycle 7000
+
+  Warning: System unstable at cycle 8000
+
+  Warning: System unstable at cycle 9000
+
+  Warning: System unstable at cycle 10000
+
+=== Performance Summary ===
+Traffic Pattern: quasi-diagonal
+Offered Load: 0.3
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 192103
+  Packets Departed: 192096
+  Throughput: 19.2096 packets/cycle
+  Normalized Throughput: 100.05%
+
+Matching Metrics:
+  Average Matching Size: 19.2096
+  Matching Efficiency: 30.015%
+
+Queue Metrics:
+  Max VOQ Length: 2
+  Avg VOQ Length: 0.00112549
+
+========================================
+Testing: quasi-diagonal traffic, load = 0.5
+========================================
+
+  Warning: System unstable at cycle 0
+
+  Warning: System unstable at cycle 1000
+
+  Warning: System unstable at cycle 2000
+
+  Warning: System unstable at cycle 3000
+
+  Warning: System unstable at cycle 4000
+
+  Warning: System unstable at cycle 5000
+
+  Warning: System unstable at cycle 6000
+
+  Warning: System unstable at cycle 7000
+
+  Warning: System unstable at cycle 8000
+
+  Warning: System unstable at cycle 9000
+
+  Warning: System unstable at cycle 10000
+
+=== Performance Summary ===
+Traffic Pattern: quasi-diagonal
+Offered Load: 0.5
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 320116
+  Packets Departed: 320117
+  Throughput: 32.0117 packets/cycle
+  Normalized Throughput: 100.037%
+
+Matching Metrics:
+  Average Matching Size: 32.0117
+  Matching Efficiency: 50.0183%
+
+Queue Metrics:
+  Max VOQ Length: 5
+  Avg VOQ Length: 0.00909424
+
+========================================
+Testing: quasi-diagonal traffic, load = 0.7
+========================================
+
+  Warning: System unstable at cycle 0
+
+  Warning: System unstable at cycle 1000
+
+  Warning: System unstable at cycle 2000
+
+  Warning: System unstable at cycle 3000
+
+  Warning: System unstable at cycle 4000
+
+  Warning: System unstable at cycle 5000
+
+  Warning: System unstable at cycle 6000
+
+  Warning: System unstable at cycle 7000
+
+  Warning: System unstable at cycle 8000
+
+  Warning: System unstable at cycle 9000
+
+  Warning: System unstable at cycle 10000
+
+=== Performance Summary ===
+Traffic Pattern: quasi-diagonal
+Offered Load: 0.7
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 447582
+  Packets Departed: 422049
+  Throughput: 42.2049 packets/cycle
+  Normalized Throughput: 94.2074%
+
+Matching Metrics:
+  Average Matching Size: 42.2049
+  Matching Efficiency: 65.9452%
+
+Queue Metrics:
+  Max VOQ Length: 200
+  Avg VOQ Length: 0.120698
+
+========================================
+Testing: quasi-diagonal traffic, load = 0.8
+========================================
+
+  Warning: System unstable at cycle 0
+
+  Warning: System unstable at cycle 1000
+
+  Warning: System unstable at cycle 2000
+
+  Warning: System unstable at cycle 3000
+
+  Warning: System unstable at cycle 4000
+
+  Warning: System unstable at cycle 5000
+
+  Warning: System unstable at cycle 6000
+
+  Warning: System unstable at cycle 7000
+
+  Warning: System unstable at cycle 8000
+
+  Warning: System unstable at cycle 9000
+
+  Warning: System unstable at cycle 10000
+
+=== Performance Summary ===
+Traffic Pattern: quasi-diagonal
+Offered Load: 0.8
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 511653
+  Packets Departed: 410282
+  Throughput: 41.0282 packets/cycle
+  Normalized Throughput: 80.1332%
+
+Matching Metrics:
+  Average Matching Size: 41.0282
+  Matching Efficiency: 64.1066%
+
+Queue Metrics:
+  Max VOQ Length: 1020
+  Avg VOQ Length: 0.129514
+
+========================================
+Testing: quasi-diagonal traffic, load = 0.9
+========================================
+
+  Warning: System unstable at cycle 0
+
+  Warning: System unstable at cycle 1000
+
+  Warning: System unstable at cycle 2000
+
+  Warning: System unstable at cycle 3000
+
+  Warning: System unstable at cycle 4000
+
+  Warning: System unstable at cycle 5000
+
+  Warning: System unstable at cycle 6000
+
+  Warning: System unstable at cycle 7000
+
+  Warning: System unstable at cycle 8000
+
+  Warning: System unstable at cycle 9000
+
+  Warning: System unstable at cycle 10000
+
+=== Performance Summary ===
+Traffic Pattern: quasi-diagonal
+Offered Load: 0.9
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 575869
+  Packets Departed: 376314
+  Throughput: 37.6314 packets/cycle
+  Normalized Throughput: 65.3323%
+
+Matching Metrics:
+  Average Matching Size: 37.6314
+  Matching Efficiency: 58.7991%
+
+Queue Metrics:
+  Max VOQ Length: 1023
+  Avg VOQ Length: 0.122183
+  Checking throughput at high load...
+
+========================================
+Testing: quasi-diagonal traffic, load = 0.95
+========================================
+
+  Warning: System unstable at cycle 0
+
+  Warning: System unstable at cycle 1000
+
+  Warning: System unstable at cycle 2000
+
+  Warning: System unstable at cycle 3000
+
+  Warning: System unstable at cycle 4000
+
+  Warning: System unstable at cycle 5000
+
+  Warning: System unstable at cycle 6000
+
+  Warning: System unstable at cycle 7000
+
+  Warning: System unstable at cycle 8000
+
+  Warning: System unstable at cycle 9000
+
+  Warning: System unstable at cycle 10000
+
+=== Performance Summary ===
+Traffic Pattern: quasi-diagonal
+Offered Load: 0.95
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 607911
+  Packets Departed: 357483
+  Throughput: 35.7483 packets/cycle
+  Normalized Throughput: 58.7965%
+
+Matching Metrics:
+  Average Matching Size: 35.7483
+  Matching Efficiency: 55.8567%
+
+Queue Metrics:
+  Max VOQ Length: 1023
+  Avg VOQ Length: 0.124468
+  Checking throughput at high load...
+
+========================================
+Testing: log-diagonal traffic, load = 0.1
+========================================
+
+  Warning: System unstable at cycle 0
+
+  Warning: System unstable at cycle 1000
+
+  Warning: System unstable at cycle 2000
+
+  Warning: System unstable at cycle 3000
+
+  Warning: System unstable at cycle 4000
+
+  Warning: System unstable at cycle 5000
+
+  Warning: System unstable at cycle 6000
+
+  Warning: System unstable at cycle 7000
+
+  Warning: System unstable at cycle 8000
+
+  Warning: System unstable at cycle 9000
+
+  Warning: System unstable at cycle 10000
+
+=== Performance Summary ===
+Traffic Pattern: log-diagonal
+Offered Load: 0.1
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 64349
+  Packets Departed: 64349
+  Throughput: 6.4349 packets/cycle
+  Normalized Throughput: 100.545%
+
+Matching Metrics:
+  Average Matching Size: 6.4349
+  Matching Efficiency: 10.0545%
+
+Queue Metrics:
+  Max VOQ Length: 1
+  Avg VOQ Length: 5.61523e-05
+
+========================================
+Testing: log-diagonal traffic, load = 0.3
+========================================
+
+  Warning: System unstable at cycle 0
+
+  Warning: System unstable at cycle 1000
+
+  Warning: System unstable at cycle 2000
+
+  Warning: System unstable at cycle 3000
+
+  Warning: System unstable at cycle 4000
+
+  Warning: System unstable at cycle 5000
+
+  Warning: System unstable at cycle 6000
+
+  Warning: System unstable at cycle 7000
+
+  Warning: System unstable at cycle 8000
+
+  Warning: System unstable at cycle 9000
+
+  Warning: System unstable at cycle 10000
+
+=== Performance Summary ===
+Traffic Pattern: log-diagonal
+Offered Load: 0.3
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 192604
+  Packets Departed: 192605
+  Throughput: 19.2605 packets/cycle
+  Normalized Throughput: 100.315%
+
+Matching Metrics:
+  Average Matching Size: 19.2605
+  Matching Efficiency: 30.0945%
+
+Queue Metrics:
+  Max VOQ Length: 2
+  Avg VOQ Length: 0.000812988
+
+========================================
+Testing: log-diagonal traffic, load = 0.5
+========================================
+
+  Warning: System unstable at cycle 0
+
+  Warning: System unstable at cycle 1000
+
+  Warning: System unstable at cycle 2000
+
+  Warning: System unstable at cycle 3000
+
+  Warning: System unstable at cycle 4000
+
+  Warning: System unstable at cycle 5000
+
+  Warning: System unstable at cycle 6000
+
+  Warning: System unstable at cycle 7000
+
+  Warning: System unstable at cycle 8000
+
+  Warning: System unstable at cycle 9000
+
+  Warning: System unstable at cycle 10000
+
+=== Performance Summary ===
+Traffic Pattern: log-diagonal
+Offered Load: 0.5
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 319763
+  Packets Departed: 319752
+  Throughput: 31.9752 packets/cycle
+  Normalized Throughput: 99.9225%
+
+Matching Metrics:
+  Average Matching Size: 31.9752
+  Matching Efficiency: 49.9612%
+
+Queue Metrics:
+  Max VOQ Length: 4
+  Avg VOQ Length: 0.00560547
+
+========================================
+Testing: log-diagonal traffic, load = 0.7
+========================================
+
+  Warning: System unstable at cycle 0
+
+  Warning: System unstable at cycle 1000
+
+  Warning: System unstable at cycle 2000
+
+  Warning: System unstable at cycle 3000
+
+  Warning: System unstable at cycle 4000
+
+  Warning: System unstable at cycle 5000
+
+  Warning: System unstable at cycle 6000
+
+  Warning: System unstable at cycle 7000
+
+  Warning: System unstable at cycle 8000
+
+  Warning: System unstable at cycle 9000
+
+  Warning: System unstable at cycle 10000
+
+=== Performance Summary ===
+Traffic Pattern: log-diagonal
+Offered Load: 0.7
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 447643
+  Packets Departed: 434734
+  Throughput: 43.4734 packets/cycle
+  Normalized Throughput: 97.0388%
+
+Matching Metrics:
+  Average Matching Size: 43.4734
+  Matching Efficiency: 67.9272%
+
+Queue Metrics:
+  Max VOQ Length: 115
+  Avg VOQ Length: 0.127893
+
+========================================
+Testing: log-diagonal traffic, load = 0.8
+========================================
+
+  Warning: System unstable at cycle 0
+
+  Warning: System unstable at cycle 1000
+
+  Warning: System unstable at cycle 2000
+
+  Warning: System unstable at cycle 3000
+
+  Warning: System unstable at cycle 4000
+
+  Warning: System unstable at cycle 5000
+
+  Warning: System unstable at cycle 6000
+
+  Warning: System unstable at cycle 7000
+
+  Warning: System unstable at cycle 8000
+
+  Warning: System unstable at cycle 9000
+
+  Warning: System unstable at cycle 10000
+
+=== Performance Summary ===
+Traffic Pattern: log-diagonal
+Offered Load: 0.8
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 512350
+  Packets Departed: 436142
+  Throughput: 43.6142 packets/cycle
+  Normalized Throughput: 85.184%
+
+Matching Metrics:
+  Average Matching Size: 43.6142
+  Matching Efficiency: 68.1472%
+
+Queue Metrics:
+  Max VOQ Length: 1008
+  Avg VOQ Length: 0.128179
+
+========================================
+Testing: log-diagonal traffic, load = 0.9
+========================================
+
+  Warning: System unstable at cycle 0
+
+  Warning: System unstable at cycle 1000
+
+  Warning: System unstable at cycle 2000
+
+  Warning: System unstable at cycle 3000
+
+  Warning: System unstable at cycle 4000
+
+  Warning: System unstable at cycle 5000
+
+  Warning: System unstable at cycle 6000
+
+  Warning: System unstable at cycle 7000
+
+  Warning: System unstable at cycle 8000
+
+  Warning: System unstable at cycle 9000
+
+  Warning: System unstable at cycle 10000
+
+=== Performance Summary ===
+Traffic Pattern: log-diagonal
+Offered Load: 0.9
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 575857
+  Packets Departed: 441762
+  Throughput: 44.1762 packets/cycle
+  Normalized Throughput: 76.6948%
+
+Matching Metrics:
+  Average Matching Size: 44.1762
+  Matching Efficiency: 69.0253%
+
+Queue Metrics:
+  Max VOQ Length: 1023
+  Avg VOQ Length: 0.126958
+  Checking throughput at high load...
+
+========================================
+Testing: log-diagonal traffic, load = 0.95
+========================================
+
+  Warning: System unstable at cycle 0
+
+  Warning: System unstable at cycle 1000
+
+  Warning: System unstable at cycle 2000
+
+  Warning: System unstable at cycle 3000
+
+  Warning: System unstable at cycle 4000
+
+  Warning: System unstable at cycle 5000
+
+  Warning: System unstable at cycle 6000
+
+  Warning: System unstable at cycle 7000
+
+  Warning: System unstable at cycle 8000
+
+  Warning: System unstable at cycle 9000
+
+  Warning: System unstable at cycle 10000
+
+=== Performance Summary ===
+Traffic Pattern: log-diagonal
+Offered Load: 0.95
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 607967
+  Packets Departed: 446100
+  Throughput: 44.61 packets/cycle
+  Normalized Throughput: 73.3717%
+
+Matching Metrics:
+  Average Matching Size: 44.61
+  Matching Efficiency: 69.7031%
+
+Queue Metrics:
+  Max VOQ Length: 1023
+  Avg VOQ Length: 0.117454
+  Checking throughput at high load...
+
+========================================
+ALL HLS TESTS COMPLETED!
+Results saved to: sw_qps_hls_results.csv
+========================================
+INFO: [SIM 211-1] CSim done with 0 errors.
+INFO: [SIM 211-3] *************** CSIM finish ***************
+INFO: [HLS 200-2161] Finished Command csim_design Elapsed time: 00:07:13; Allocated memory: 0.000 MB.
+INFO: [HLS 200-112] Total CPU user time: 435.45 seconds. Total CPU system time: 1.18 seconds. Total elapsed time: 438.24 seconds; peak allocated memory: 0.000 MB.

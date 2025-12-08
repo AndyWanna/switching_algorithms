@@ -41,40 +41,40 @@ public:
     
     /*
      * Process multiple proposals and select best ones
-     * Uses First-Fit Accept (FFA) strategy
-     * 
-     * Input: Array of proposals and count
+     * Uses First-Fit Accept (FFA) strategy with backfilling
+     *
+     * Input: Array of proposals, count, and current slot
      * Output: Array of accepts
      */
     void processProposals(
         Proposal proposals[N],  // Max N proposals (one per input)
         int num_proposals,
         Accept accepts[N],      // Output accepts
-        int& num_accepts
+        int& num_accepts,
+        slot_id_t current_slot = T-1  // Current slot being filled
     ) {
         #pragma HLS INLINE off
         #pragma HLS PIPELINE off
-        
+
         num_accepts = 0;
-        
+
         if (num_proposals == 0) {
             return;
         }
-        
+
         // Sort proposals by VOQ length (descending)
-        // For HLS, use a simple sorting network for small arrays
         Proposal sorted_proposals[KNOCKOUT_THRESH];
         #pragma HLS ARRAY_PARTITION variable=sorted_proposals complete
-        
+
         // Take top KNOCKOUT_THRESH proposals
         int num_to_process = (num_proposals > KNOCKOUT_THRESH) ? KNOCKOUT_THRESH : num_proposals;
-        
-        // Simple selection sort for top-K (works well for small K)
+
+        // Simple selection sort for top-K
         for (int i = 0; i < num_to_process; i++) {
             #pragma HLS LOOP_TRIPCOUNT min=1 max=3
             int max_idx = i;
             queue_len_t max_len = proposals[i].voq_len;
-            
+
             for (int j = i + 1; j < num_proposals && j < N; j++) {
                 #pragma HLS LOOP_TRIPCOUNT min=0 max=64
                 if (proposals[j].voq_len > max_len) {
@@ -82,44 +82,69 @@ public:
                     max_len = proposals[j].voq_len;
                 }
             }
-            
+
             // Swap
             if (max_idx != i) {
                 Proposal temp = proposals[i];
                 proposals[i] = proposals[max_idx];
                 proposals[max_idx] = temp;
             }
-            
+
             sorted_proposals[i] = proposals[i];
         }
-        
-        // Try to accept proposals using FFA
-        for (int i = 0; i < num_to_process; i++) {
-            #pragma HLS LOOP_TRIPCOUNT min=1 max=3
-            
-            if (!sorted_proposals[i].valid) continue;
-            
-            // Find first mutual available slot
-            slot_id_t slot = first_fit_accept(
-                sorted_proposals[i].availability,
-                calendar.availability
-            );
-            
-            if (slot != INVALID_PORT) {
-                // Accept the proposal
-                calendar.schedule[slot] = sorted_proposals[i].input_id;
-                calendar.availability &= ~(avail_bitmap_t(1) << slot);
-                
-                // Create accept message
+
+        // Accept best proposal for current slot (if available)
+        if (num_to_process > 0 && sorted_proposals[0].valid) {
+            avail_bitmap_t current_slot_mask = (avail_bitmap_t(1) << current_slot);
+
+            // Check if current slot is mutually available
+            if ((sorted_proposals[0].availability & current_slot_mask) != 0 &&
+                (calendar.availability & current_slot_mask) != 0) {
+
+                // Accept for current slot
+                calendar.schedule[current_slot] = sorted_proposals[0].input_id;
+                calendar.availability &= ~current_slot_mask;
+
                 Accept acc;
                 acc.output_id = port_id;
-                acc.time_slot = slot;
+                acc.input_id = sorted_proposals[0].input_id;
+                acc.time_slot = current_slot;
                 acc.valid = true;
-                
+
                 accepts[num_accepts++] = acc;
-                
-                // In standard SW-QPS, accept only one per iteration
-                break;
+            }
+        }
+
+        // BACKFILLING: In second half of window, try to accept second-best proposal
+        // to fill earlier slots (holes in the schedule)
+        if (current_slot >= T/2 && num_to_process > 1) {
+            for (int i = 1; i < num_to_process; i++) {
+                #pragma HLS LOOP_TRIPCOUNT min=0 max=2
+
+                if (!sorted_proposals[i].valid) continue;
+
+                // Find first mutual available slot (earlier than current)
+                slot_id_t slot = first_fit_accept(
+                    sorted_proposals[i].availability,
+                    calendar.availability
+                );
+
+                if (slot != INVALID_PORT && slot < current_slot) {
+                    // Accept the proposal for backfilling
+                    calendar.schedule[slot] = sorted_proposals[i].input_id;
+                    calendar.availability &= ~(avail_bitmap_t(1) << slot);
+
+                    Accept acc;
+                    acc.output_id = port_id;
+                    acc.input_id = sorted_proposals[i].input_id;
+                    acc.time_slot = slot;
+                    acc.valid = true;
+
+                    accepts[num_accepts++] = acc;
+
+                    // Only accept one backfill proposal per iteration
+                    break;
+                }
             }
         }
     }

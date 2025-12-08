@@ -1,0 +1,280 @@
+
+****** Vitis HLS - High-Level Synthesis from C, C++ and OpenCL v2024.1.2 (64-bit)
+  **** SW Build 5096458 on Sep  5 2024
+  **** IP Build 5164407 on Fri Sep  6 08:18:11 MDT 2024
+  **** SharedData Build 5164864 on Thu Sep 05 13:09:09 MDT 2024
+  **** Start of session at: Sat Dec  6 18:40:30 2025
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source /tools/software/xilinx/ARCHIVE/Vitis_HLS/2024.1/scripts/vitis_hls/hls.tcl -notrace
+INFO: [HLS 200-10] For user 'awanna3' on host 'chao-srv2.ece.gatech.edu' (Linux_x86_64 version 5.14.0-611.5.1.el9_7.x86_64) on Sat Dec 06 18:40:32 EST 2025
+INFO: [HLS 200-10] In directory '/usr/scratch/awanna3/ssched_simulator/hardware-hls'
+WARNING: [HLS 200-2053] The vitis_hls executable is deprecated. Consider using vitis-run --mode hls --tcl
+Sourcing Tcl script './run_sw_qps.tcl'
+INFO: [HLS 200-1510] Running: open_project -reset sw_qps_project_base 
+INFO: [HLS 200-10] Opening and resetting project '/usr/scratch/awanna3/ssched_simulator/hardware-hls/sw_qps_project_base'.
+INFO: [HLS 200-1510] Running: set_top sw_qps_top 
+INFO: [HLS 200-1510] Running: add_files src/sw_qps_top.cpp 
+INFO: [HLS 200-10] Adding design file 'src/sw_qps_top.cpp' to the project
+INFO: [HLS 200-1510] Running: add_files src/sliding_window.h 
+INFO: [HLS 200-10] Adding design file 'src/sliding_window.h' to the project
+INFO: [HLS 200-1510] Running: add_files src/input_port.h 
+INFO: [HLS 200-10] Adding design file 'src/input_port.h' to the project
+INFO: [HLS 200-1510] Running: add_files src/output_port.h 
+INFO: [HLS 200-10] Adding design file 'src/output_port.h' to the project
+INFO: [HLS 200-1510] Running: add_files src/qps_sampler.cpp 
+INFO: [HLS 200-10] Adding design file 'src/qps_sampler.cpp' to the project
+INFO: [HLS 200-1510] Running: add_files src/utils.h 
+INFO: [HLS 200-10] Adding design file 'src/utils.h' to the project
+INFO: [HLS 200-1510] Running: add_files src/sw_qps_types.h 
+INFO: [HLS 200-10] Adding design file 'src/sw_qps_types.h' to the project
+INFO: [HLS 200-1510] Running: add_files -tb tb/tb_sw_qps_hls.cpp 
+INFO: [HLS 200-10] Adding test bench file 'tb/tb_sw_qps_hls.cpp' to the project
+INFO: [HLS 200-1510] Running: add_files -tb tb/tb_sw_qps_pure.cpp -cflags -std=c++11 -DSW_QPS_PURE_DISABLE_MAIN 
+INFO: [HLS 200-10] Adding test bench file 'tb/tb_sw_qps_pure.cpp' to the project
+INFO: [HLS 200-1510] Running: open_solution solution-base 
+INFO: [HLS 200-10] Creating and opening solution '/usr/scratch/awanna3/ssched_simulator/hardware-hls/sw_qps_project_base/solution-base'.
+INFO: [HLS 200-1505] Using default flow_target 'vivado'
+Resolution: For help on HLS 200-1505 see docs.xilinx.com/access/sources/dita/topic?Doc_Version=2024.1%20English&url=ug1448-hls-guidance&resourceid=200-1505.html
+INFO: [HLS 200-1510] Running: set_part xczu9eg-ffvb1156-2-e 
+INFO: [HLS 200-1611] Setting target device to 'xczu9eg-ffvb1156-2-e'
+INFO: [HLS 200-1510] Running: create_clock -period 5 -name default 
+INFO: [SYN 201-201] Setting up clock 'default' with a period of 5ns.
+=========================================
+Step 1: Running C Simulation...
+=========================================
+INFO: [HLS 200-1510] Running: csim_design -clean 
+INFO: [SIM 211-2] *************** CSIM start ***************
+INFO: [SIM 211-4] CSIM will launch CLANG as the compiler.
+INFO: [HLS 200-2036] Building debug C Simulation binaries
+   Compiling ../../../../tb/tb_sw_qps_pure.cpp in debug mode
+   Compiling ../../../../tb/tb_sw_qps_hls.cpp in debug mode
+   Compiling ../../../../src/qps_sampler.cpp in debug mode
+   Compiling ../../../../src/sw_qps_top.cpp in debug mode
+   Generating csim.exe
+========================================
+SW-QPS HLS CO-SIMULATION TESTBENCH
+========================================
+Configuration:
+  N = 64 ports
+  T = 16 window size
+  Knockout = 3
+
+
+=== Testing Single Cycle Interface ===
+
+1. Diagonal traffic:
+  Iterations: 1, Matching size: 0
+  Iterations: 2, Matching size: 0
+  Iterations: 4, Matching size: 0
+  Iterations: 8, Matching size: 0
+  Iterations: 16, Matching size: 0
+
+2. Full mesh traffic:
+  Matching size with full mesh: 0
+  Conflicts: 0
+✓ Single cycle interface test passed
+
+========================================
+Testing: uniform traffic, load = 0.1
+========================================
+
+=== Performance Summary ===
+Traffic Pattern: uniform
+Offered Load: 0.1
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 64492
+  Packets Departed: 64486
+  Throughput: 6.4486 packets/cycle
+  Normalized Throughput: 10.0759%
+
+Matching Metrics:
+  Average Matching Size: 6.4486
+  Matching Efficiency: 10.0759%
+
+Queue Metrics:
+  Max VOQ Length: 2
+  Avg VOQ Length: 0.0111426
+
+========================================
+Testing: uniform traffic, load = 0.3
+========================================
+
+=== Performance Summary ===
+Traffic Pattern: uniform
+Offered Load: 0.3
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 191965
+  Packets Departed: 191935
+  Throughput: 19.1935 packets/cycle
+  Normalized Throughput: 29.9898%
+
+Matching Metrics:
+  Average Matching Size: 19.1935
+  Matching Efficiency: 29.9898%
+
+Queue Metrics:
+  Max VOQ Length: 3
+  Avg VOQ Length: 0.0426001
+
+========================================
+Testing: uniform traffic, load = 0.5
+========================================
+
+=== Performance Summary ===
+Traffic Pattern: uniform
+Offered Load: 0.5
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 319583
+  Packets Departed: 313422
+  Throughput: 31.3422 packets/cycle
+  Normalized Throughput: 48.9722%
+
+Matching Metrics:
+  Average Matching Size: 31.3422
+  Matching Efficiency: 48.9722%
+
+Queue Metrics:
+  Max VOQ Length: 11
+  Avg VOQ Length: 0.129246
+
+========================================
+Testing: uniform traffic, load = 0.7
+========================================
+
+=== Performance Summary ===
+Traffic Pattern: uniform
+Offered Load: 0.7
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 447362
+  Packets Departed: 261525
+  Throughput: 26.1525 packets/cycle
+  Normalized Throughput: 40.8633%
+
+Matching Metrics:
+  Average Matching Size: 26.1525
+  Matching Efficiency: 40.8633%
+
+Queue Metrics:
+  Max VOQ Length: 112
+  Avg VOQ Length: 0.127544
+
+========================================
+Testing: uniform traffic, load = 0.8
+========================================
+
+=== Performance Summary ===
+Traffic Pattern: uniform
+Offered Load: 0.8
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 511906
+  Packets Departed: 227332
+  Throughput: 22.7332 packets/cycle
+  Normalized Throughput: 35.5206%
+
+Matching Metrics:
+  Average Matching Size: 22.7332
+  Matching Efficiency: 35.5206%
+
+Queue Metrics:
+  Max VOQ Length: 144
+  Avg VOQ Length: 0.125271
+
+========================================
+Testing: uniform traffic, load = 0.9
+========================================
+
+=== Performance Summary ===
+Traffic Pattern: uniform
+Offered Load: 0.9
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 575905
+  Packets Departed: 199589
+  Throughput: 19.9589 packets/cycle
+  Normalized Throughput: 31.1858%
+
+Matching Metrics:
+  Average Matching Size: 19.9589
+  Matching Efficiency: 31.1858%
+
+Queue Metrics:
+  Max VOQ Length: 179
+  Avg VOQ Length: 0.126118
+  Checking throughput at high load...
+
+========================================
+Testing: uniform traffic, load = 0.95
+========================================
+
+=== Performance Summary ===
+Traffic Pattern: uniform
+Offered Load: 0.95
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 608164
+  Packets Departed: 187471
+  Throughput: 18.7471 packets/cycle
+  Normalized Throughput: 29.2923%
+
+Matching Metrics:
+  Average Matching Size: 18.7471
+  Matching Efficiency: 29.2923%
+
+Queue Metrics:
+  Max VOQ Length: 187
+  Avg VOQ Length: 0.120227
+  Checking throughput at high load...
+
+========================================
+Testing: diagonal traffic, load = 0.1
+========================================
+
+=== Performance Summary ===
+Traffic Pattern: diagonal
+Offered Load: 0.1
+Total Cycles: 10000
+
+Throughput Metrics:
+  Packets Arrived: 64222
+  Packets Departed: 61279
+  Throughput: 6.1279 packets/cycle
+  Normalized Throughput: 9.57484%
+
+Matching Metrics:
+  Average Matching Size: 6.1279
+  Matching Efficiency: 9.57484%
+
+Queue Metrics:
+  Max VOQ Length: 105
+  Avg VOQ Length: 0.12501
+
+========================================
+Testing: diagonal traffic, load = 0.3
+========================================
+csim.exe: ../../../../src/input_port.h:84: void InputPort::removePacket(port_id_t): Assertion `false && "Removing packet from empty VOQ!"' failed.
+@E Simulation failed with unknown error.
+ERROR: [SIM 211-100] CSim failed with errors.
+INFO: [SIM 211-3] *************** CSIM finish ***************
+INFO: [HLS 200-2161] Finished Command csim_design Elapsed time: 00:06:27; Allocated memory: 0.000 MB.
+4
+    while executing
+"source ./run_sw_qps.tcl"
+    ("uplevel" body line 1)
+    invoked from within
+"uplevel \#0 [list source $tclfile] "
+
+INFO: [HLS 200-112] Total CPU user time: 388.48 seconds. Total CPU system time: 1.05 seconds. Total elapsed time: 391.6 seconds; peak allocated memory: 0.000 MB.

@@ -44,10 +44,11 @@ struct Proposal {
 // Accept message: Output -> Input
 struct Accept {
     port_id_t output_id;        // Which output port sent this
+    port_id_t input_id;         // Which input port this accept is for
     slot_id_t time_slot;        // Which slot was accepted
     bool valid;                 // Is this acceptance valid?
-    
-    Accept() : output_id(0), time_slot(0), valid(false) {}
+
+    Accept() : output_id(0), input_id(INVALID_PORT), time_slot(0), valid(false) {}
 };
 
 // ============================================================================

@@ -123,16 +123,9 @@ public:
             // Route accepts back to input ports
             for (int j = 0; j < num_accepts; j++) {
                 #pragma HLS LOOP_TRIPCOUNT min=0 max=1
-                if (accepts[j].valid) {
-                    // Find which input this accept is for from the proposals
-                    for (int k = 0; k < num_proposals_per_output[i]; k++) {
-                        if (proposals_per_output[i][k].valid) {
-                            port_id_t input_id = proposals_per_output[i][k].input_id;
-                            if (input_id < N) {
-                                input_ports[input_id].processAccept(accepts[j]);
-                            }
-                        }
-                    }
+                if (accepts[j].valid && accepts[j].input_id < N) {
+                    // Send accept only to the specific input port that was accepted
+                    input_ports[accepts[j].input_id].processAccept(accepts[j]);
                 }
             }
         }

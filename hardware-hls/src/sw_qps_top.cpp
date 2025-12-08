@@ -5,8 +5,8 @@ void sw_qps_top(
     bool run_iteration,
     bool graduate,
     port_id_t matching[N],
-    ap_uint<8> matching_size,
-    bool system_stable,
+    ap_uint<8>& matching_size,
+    bool& system_stable,
     bool reset
 ) {
     #pragma HLS INTERFACE mode=ap_ctrl_hs port=return
@@ -66,7 +66,7 @@ void sw_qps_single_cycle(
     queue_len_t voq_state[N][N],
     ap_uint<4> num_iterations,
     port_id_t matching[N],
-    ap_uint<8> matching_size,
+    ap_uint<8>& matching_size,
     bool reset
 ) {
     #pragma HLS INTERFACE mode=ap_ctrl_hs port=return
