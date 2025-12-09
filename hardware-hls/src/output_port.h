@@ -54,9 +54,9 @@ public:
     ) {
         #pragma HLS INLINE off
         #pragma HLS PIPELINE off
-        
+
         num_accepts = 0;
-        
+
         if (num_proposals == 0) {
             return;
         }
@@ -109,15 +109,16 @@ public:
                 // Accept the proposal
                 calendar.schedule[slot] = sorted_proposals[i].input_id;
                 calendar.availability &= ~(avail_bitmap_t(1) << slot);
-                
+
                 // Create accept message
                 Accept acc;
                 acc.output_id = port_id;
+                acc.input_id = sorted_proposals[i].input_id;
                 acc.time_slot = slot;
                 acc.valid = true;
-                
+
                 accepts[num_accepts++] = acc;
-                
+
                 // In standard SW-QPS, accept only one per iteration
                 break;
             }

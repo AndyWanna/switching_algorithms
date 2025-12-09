@@ -70,7 +70,7 @@ inline slot_id_t first_fit_accept(
     avail_bitmap_t output_avail
 ) {
     #pragma HLS INLINE
-    
+
     avail_bitmap_t mutual = input_avail & output_avail;
     return find_first_set(mutual);
 }

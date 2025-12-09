@@ -3,12 +3,12 @@
   **** SW Build 5096458 on Sep  5 2024
   **** IP Build 5164407 on Fri Sep  6 08:18:11 MDT 2024
   **** SharedData Build 5164864 on Thu Sep 05 13:09:09 MDT 2024
-  **** Start of session at: Mon Dec  8 18:02:58 2025
+  **** Start of session at: Mon Dec  8 17:22:49 2025
     ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
     ** Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
 
 source /tools/software/xilinx/ARCHIVE/Vitis_HLS/2024.1/scripts/vitis_hls/hls.tcl -notrace
-INFO: [HLS 200-10] For user 'awanna3' on host 'chao-srv2.ece.gatech.edu' (Linux_x86_64 version 5.14.0-611.5.1.el9_7.x86_64) on Mon Dec 08 18:03:00 EST 2025
+INFO: [HLS 200-10] For user 'awanna3' on host 'chao-srv2.ece.gatech.edu' (Linux_x86_64 version 5.14.0-611.5.1.el9_7.x86_64) on Mon Dec 08 17:22:51 EST 2025
 INFO: [HLS 200-10] In directory '/usr/scratch/awanna3/ssched_simulator/hardware-hls'
 WARNING: [HLS 200-2053] The vitis_hls executable is deprecated. Consider using vitis-run --mode hls --tcl
 Sourcing Tcl script './run_sw_qps.tcl'
@@ -54,7 +54,7 @@ INFO: [HLS 200-2036] Building debug C Simulation binaries
 SW-QPS HLS CO-SIMULATION TESTBENCH
 ========================================
 Configuration:
-  N = 4 ports
+  N = 8 ports
   T = 16 window size
   Knockout = 3
 
@@ -62,7 +62,7 @@ Skipping single cycle test (too slow)...
 
 === Starting Main Simulation ===
 Testing 1 patterns x 2 loads
-Each test: 10 warmup + 20 measurement cycles
+Each test: 20 warmup + 100 measurement cycles
 
 [Test 1/2] uniform @ load=0.1
 
@@ -73,5 +73,5 @@ Initializing data structures...
 Initializing VOQ tracking...
 Resetting HLS core...
 Reset complete!
-Starting simulation loop: 30 cycles
-  Cycle: 0/30 (arrivals=0, departures=0)
+Starting simulation loop: 120 cycles
+  Cycle: 0/120 (arrivals=0, departures=0)

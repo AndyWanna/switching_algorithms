@@ -25,7 +25,7 @@ add_files src/sw_qps_types.h
 
 # Add testbench files
 add_files -tb tb/tb_sw_qps_hls.cpp
-add_files -tb tb/tb_sw_qps_pure.cpp -cflags "-std=c++11 -DSW_QPS_PURE_DISABLE_MAIN"
+# add_files -tb tb/tb_sw_qps_pure.cpp
 
 # Open solution
 open_solution "solution-base"

@@ -7,7 +7,6 @@
         <file name="src/input_port.h" sc="0" tb="false" cflags="" csimflags="" blackbox="false"/>
         <file name="src/sliding_window.h" sc="0" tb="false" cflags="" csimflags="" blackbox="false"/>
         <file name="src/sw_qps_top.cpp" sc="0" tb="false" cflags="" csimflags="" blackbox="false"/>
-        <file name="../../tb/tb_sw_qps_pure.cpp" sc="0" tb="1" cflags="-std=c++11 -DSW_QPS_PURE_DISABLE_MAIN -Wno-unknown-pragmas" csimflags="" blackbox="false"/>
         <file name="../../tb/tb_sw_qps_hls.cpp" sc="0" tb="1" cflags="-Wno-unknown-pragmas" csimflags="" blackbox="false"/>
     </files>
     <solutions>

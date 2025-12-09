@@ -3,12 +3,12 @@
   **** SW Build 5096458 on Sep  5 2024
   **** IP Build 5164407 on Fri Sep  6 08:18:11 MDT 2024
   **** SharedData Build 5164864 on Thu Sep 05 13:09:09 MDT 2024
-  **** Start of session at: Mon Dec  8 18:02:58 2025
+  **** Start of session at: Mon Dec  8 16:54:57 2025
     ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
     ** Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
 
 source /tools/software/xilinx/ARCHIVE/Vitis_HLS/2024.1/scripts/vitis_hls/hls.tcl -notrace
-INFO: [HLS 200-10] For user 'awanna3' on host 'chao-srv2.ece.gatech.edu' (Linux_x86_64 version 5.14.0-611.5.1.el9_7.x86_64) on Mon Dec 08 18:03:00 EST 2025
+INFO: [HLS 200-10] For user 'awanna3' on host 'chao-srv2.ece.gatech.edu' (Linux_x86_64 version 5.14.0-611.5.1.el9_7.x86_64) on Mon Dec 08 16:54:58 EST 2025
 INFO: [HLS 200-10] In directory '/usr/scratch/awanna3/ssched_simulator/hardware-hls'
 WARNING: [HLS 200-2053] The vitis_hls executable is deprecated. Consider using vitis-run --mode hls --tcl
 Sourcing Tcl script './run_sw_qps.tcl'
@@ -31,6 +31,8 @@ INFO: [HLS 200-1510] Running: add_files src/sw_qps_types.h
 INFO: [HLS 200-10] Adding design file 'src/sw_qps_types.h' to the project
 INFO: [HLS 200-1510] Running: add_files -tb tb/tb_sw_qps_hls.cpp 
 INFO: [HLS 200-10] Adding test bench file 'tb/tb_sw_qps_hls.cpp' to the project
+INFO: [HLS 200-1510] Running: add_files -tb tb/tb_sw_qps_pure.cpp -cflags -std=c++11 -DSW_QPS_PURE_DISABLE_MAIN 
+INFO: [HLS 200-10] Adding test bench file 'tb/tb_sw_qps_pure.cpp' to the project
 INFO: [HLS 200-1510] Running: open_solution solution-base 
 INFO: [HLS 200-10] Creating and opening solution '/usr/scratch/awanna3/ssched_simulator/hardware-hls/sw_qps_project_base/solution-base'.
 INFO: [HLS 200-1505] Using default flow_target 'vivado'
@@ -46,6 +48,7 @@ INFO: [HLS 200-1510] Running: csim_design -clean
 INFO: [SIM 211-2] *************** CSIM start ***************
 INFO: [SIM 211-4] CSIM will launch CLANG as the compiler.
 INFO: [HLS 200-2036] Building debug C Simulation binaries
+   Compiling ../../../../tb/tb_sw_qps_pure.cpp in debug mode
    Compiling ../../../../tb/tb_sw_qps_hls.cpp in debug mode
    Compiling ../../../../src/qps_sampler.cpp in debug mode
    Compiling ../../../../src/sw_qps_top.cpp in debug mode
@@ -54,7 +57,7 @@ INFO: [HLS 200-2036] Building debug C Simulation binaries
 SW-QPS HLS CO-SIMULATION TESTBENCH
 ========================================
 Configuration:
-  N = 4 ports
+  N = 64 ports
   T = 16 window size
   Knockout = 3
 
@@ -62,7 +65,7 @@ Skipping single cycle test (too slow)...
 
 === Starting Main Simulation ===
 Testing 1 patterns x 2 loads
-Each test: 10 warmup + 20 measurement cycles
+Each test: 20 warmup + 100 measurement cycles
 
 [Test 1/2] uniform @ load=0.1
 
@@ -73,5 +76,18 @@ Initializing data structures...
 Initializing VOQ tracking...
 Resetting HLS core...
 Reset complete!
-Starting simulation loop: 30 cycles
-  Cycle: 0/30 (arrivals=0, departures=0)
+Starting simulation loop: 120 cycles
+  Cycle: 0/120 (arrivals=0, departures=0)
+@E Simulation failed with unknown error.
+ERROR: [SIM 211-100] CSim failed with errors.
+INFO: [SIM 211-3] *************** CSIM finish ***************
+INFO: [HLS 200-2161] Finished Command csim_design Elapsed time: 00:23:53; Allocated memory: 0.000 MB.
+4
+    while executing
+"source ./run_sw_qps.tcl"
+    ("uplevel" body line 1)
+    invoked from within
+"uplevel \#0 [list source $tclfile] "
+
+INFO: [HLS 200-112] Total CPU user time: 1433.49 seconds. Total CPU system time: 1.03 seconds. Total elapsed time: 1438.81 seconds; peak allocated memory: 0.000 MB.
+/tools/software/xilinx/ARCHIVE/Vitis_HLS/2024.1/bin/rdiArgs.sh: line 387: 131923 Killed                  "$RDI_PROG" "$@"

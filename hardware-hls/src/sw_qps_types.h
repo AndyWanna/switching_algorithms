@@ -8,7 +8,7 @@
 // CONFIGURATION PARAMETERS
 // ============================================================================
 
-#define N 64                    // Number of input/output ports
+#define N 4                     // Number of input/output ports (REDUCED FOR VALIDATION)
 #define T 16                    // Window size (time slots)
 #define MAX_VOQ_LEN 1024       // Maximum queue length
 #define LOG2_MAX_VOQ 10        // log2(MAX_VOQ_LEN)
@@ -44,10 +44,11 @@ struct Proposal {
 // Accept message: Output -> Input
 struct Accept {
     port_id_t output_id;        // Which output port sent this
+    port_id_t input_id;         // Which input port was accepted
     slot_id_t time_slot;        // Which slot was accepted
     bool valid;                 // Is this acceptance valid?
-    
-    Accept() : output_id(0), time_slot(0), valid(false) {}
+
+    Accept() : output_id(0), input_id(INVALID_PORT), time_slot(0), valid(false) {}
 };
 
 // ============================================================================

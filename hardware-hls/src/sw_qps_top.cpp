@@ -92,17 +92,27 @@ void sw_qps_single_cycle(
 
     sw_manager.loadTrafficMatrix(voq_state);
 
-    for (int iter = 0; iter < num_iterations && iter < T; iter++) {
-        #pragma HLS LOOP_TRIPCOUNT min=1 max=16
-        sw_manager.runIteration();
-    }
+    // Warm up the sliding window with T cycles
+    // Each cycle runs num_iterations to build up matches in all T slots
+    for (int cycle = 0; cycle < T; cycle++) {
+        #pragma HLS LOOP_TRIPCOUNT min=16 max=16
+        for (int iter = 0; iter < num_iterations && iter < T; iter++) {
+            #pragma HLS LOOP_TRIPCOUNT min=1 max=16
+            sw_manager.runIteration();
+        }
 
-    MatchingResult result = sw_manager.graduateMatching();
-    for (int i = 0; i < N; i++) {
-        #pragma HLS UNROLL
-        matching[i] = result.matching[i];
+        // Graduate a matching (but only return the last one)
+        MatchingResult result = sw_manager.graduateMatching();
+
+        // Only save the result from the final cycle
+        if (cycle == T - 1) {
+            for (int i = 0; i < N; i++) {
+                #pragma HLS UNROLL
+                matching[i] = result.matching[i];
+            }
+            matching_size = result.matching_size;
+        }
     }
-    matching_size = result.matching_size;
 }
 
 void sw_qps_stream(
